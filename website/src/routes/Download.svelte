@@ -60,7 +60,7 @@
     downloadError = ''
     try {
       const response = await fetch(
-        `https://api.github.com/repos/mikaelkristiansson/gitbar/releases/latest`
+        `https://api.github.com/repos/narwhal-apps/gitbar/releases/latest`,
       )
 
       const json: LatestRelease = await response.json()

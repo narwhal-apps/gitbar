@@ -4,7 +4,7 @@ version = "0.8.0"
 description = "Github review counter"
 authors = ["mikael.kristiansson"]
 license = "MIT"
-repository = "https://github.com/mikaelkristiansson/gitbar"
+repository = "https://github.com/narwhals-app/gitbar"
 default-run = "gitbar"
 edition = "2021"
 rust-version = "1.67"
@@ -22,7 +22,8 @@ tauri-plugin-positioner = { version = "1.0.4", features = ["system-tray"] }
 serde = { version = "1.0", features = ["derive"] }
 tiny_http = "0.12.0"
 ascii = "1.1.0"
-tauri = { version = "1.2.3", features = [ "window-set-size",
+tauri = { version = "1.2.3", features = [
+    "window-set-size",
     "updater",
     "http-request",
     "icon-png",
