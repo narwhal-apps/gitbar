@@ -9,6 +9,7 @@ env:
   TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
   VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
   VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+  CI: true
 
 jobs:
   publish-tauri:
@@ -64,6 +65,7 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+          CI: true
         with:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: Gitbar v__VERSION__
