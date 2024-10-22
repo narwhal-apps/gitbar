@@ -57,6 +57,9 @@ jobs:
       - name: install app dependencies
         run: yarn install
 
+      - name: Build and package the app
+        run: yarn tauri build ${{ matrix.args }}
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
