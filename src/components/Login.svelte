@@ -135,7 +135,10 @@
         To generate a token, go to GitHub,
         <button
           class="underline hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
-          on:click={() => open('https://github.com/settings/tokens')}
+          on:click={() =>
+            open(
+              'https://github.com/settings/tokens/new?description=gitbar&default_expires_at=none&scopes=repo,read:org'
+            )}
         >
           personal access tokens
         </button>

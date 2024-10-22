@@ -41,15 +41,6 @@
     <img src={`${base}/screenshot.png`} alt="gitbar screenshot" />
   </div>
 </Revealed>
-<Revealed
-  class="relative mx-auto mb-24 max-w-5xl px-6 transition-[transform,opacity] will-change-contents sm:px-8"
-  options={{ opacity: 0, y: 10, duration: 1000 }}
->
-  <div class="gradient gradient-2 absolute inset-0 -z-10 blur-[160px]" />
-  <div class="relative">
-    <img src={`${base}/screenshot-light.png`} alt="gitbar screenshot" />
-  </div>
-</Revealed>
 
 <style lang="sass">
   h1

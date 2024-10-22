@@ -5,7 +5,7 @@
   import { base } from '$app/paths'
 
   function removeTrailingSlash(str: string) {
-    return str.replace(/\/+$/, '');
+    return str.replace(/\/+$/, '')
   }
 </script>
 
@@ -23,10 +23,7 @@
   <!-- <meta property="twitter:domain" content="gitbar.space" /> -->
   <!-- <meta property="twitter:url" content="https://gitbar.space" /> -->
   <meta name="twitter:title" content="Gitbar" />
-  <meta
-    name="twitter:description"
-    content="Keep track of your github reviews"
-  />
+  <meta name="twitter:description" content="Keep track of your github reviews" />
   <!-- <meta name="twitter:image" content="https://gitbar.space/screenshot.png" /> -->
 </svelte:head>
 
@@ -49,12 +46,6 @@
       class:text-white={removeTrailingSlash($page.url.pathname) === base}
       href={`${base}/`}>Overview</a
     >
-    <a
-      class="mx-1.5 py-2 text-sm transition-colors duration-200 ease-md hover:text-white sm:text-base"
-      class:font-medium={$page.url.pathname === base +'/changelog'}
-      class:text-white={$page.url.pathname === base +'/changelog'}
-      href={`${base}/changelog`}>Changelog</a
-    >
   </Revealed>
   <Revealed
     class="ml-auto flex justify-end sm:ml-0 sm:w-32"
@@ -62,7 +53,7 @@
   >
     <a
       class="icon github ease-md sm:p-1.5"
-      href="https://github.com/mikaelkristiansson/gitbar"
+      href="https://github.com/narwhal-apps/gitbar"
       style="-webkit-tap-highlight-color: hsla(0, 0%, 100%, 0.1);"
       ><svg height="24" width="24" viewBox="-2 -2 28 28" xmlns="http://www.w3.org/2000/svg"
         ><path
