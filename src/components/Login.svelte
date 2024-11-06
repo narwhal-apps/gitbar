@@ -131,12 +131,12 @@
         class="w-full"
       />
       {#if errors?.token?.required?.error}
-        <p class="text-red-400 dark:text-red-300 text-sm">Token is required</p>
+        <p class="text-sm text-red-400 dark:text-red-300">Token is required</p>
       {/if}
       <span class="text-sm">
         To generate a token, go to GitHub,
         <button
-          class="underline hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
+          class="cursor-pointer underline hover:text-gray-500 dark:hover:text-gray-300"
           onclick={() =>
             open(
               'https://github.com/settings/tokens/new?description=gitbar&default_expires_at=none&scopes=repo,read:org'
@@ -174,7 +174,7 @@
         type="submit"
         >Submit {#if loading}
           <svg
-            class="animate-spin h-4 w-4 text-white ml-3"
+            class="ml-3 h-4 w-4 animate-spin text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -199,7 +199,7 @@
         >Login via GitHub
         {#if processing}
           <svg
-            class="animate-spin h-4 w-4 text-white ml-3"
+            class="ml-3 h-4 w-4 animate-spin text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

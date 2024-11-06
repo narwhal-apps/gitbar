@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
+  import type { Snippet } from 'svelte';
   import Login from './Login.svelte';
   import { auth } from '../lib/auth';
-  
 
-  let { children } = $props();
+  let { children }: { children: Snippet } = $props();
 </script>
 
 {#if $auth.account}

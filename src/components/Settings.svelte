@@ -49,7 +49,7 @@
 <div class="space-y-6">
   <Theme />
   <!-- <Toggle name="open_at_start" checked={openAtStartup} label="Auto start Gitbar" on:change={changeAutoStart} /> -->
-  <div class="flex flex-row gap-2 items-center justify-between rounded-lg border p-4">
+  <div class="flex flex-row items-center justify-between gap-2 rounded-lg border p-4">
     <div class="flex items-center space-x-2">
       <Switch id="open_at_start" name="open_at_start" checked={openAtStartup} onCheckedChange={changeAutoStart} />
       <Label for="open_at_start">Auto start Gitbar</Label>
@@ -61,7 +61,7 @@
     <!-- <Toggle name="compact_mode" checked={isCompactMode} label="Compact mode" on:change={changeCompactMode} /> -->
   </div>
   <div class="rounded-lg border p-4">
-    <label for="fetch_interval" class="block text-sm font-bold text-gray-700 dark:text-gray-100 mb-4">
+    <label for="fetch_interval" class="mb-4 block text-sm font-bold text-gray-700 dark:text-gray-100">
       Fetch interval <strong>{fetchInterval} sec</strong>
     </label>
     <Range

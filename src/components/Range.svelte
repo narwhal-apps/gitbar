@@ -4,7 +4,6 @@
   import { createEventDispatcher } from 'svelte';
   import { fly, fade } from 'svelte/transition';
 
-  
   interface Props {
     // Props
     min?: number;
@@ -19,7 +18,7 @@
     max = 100,
     initialValue = 0,
     id = null,
-    value = $bindable(typeof initialValue === 'string' ? parseInt(initialValue) : initialValue)
+    value = $bindable(typeof initialValue === 'string' ? parseInt(initialValue) : initialValue),
   }: Props = $props();
 
   // Node Bindings

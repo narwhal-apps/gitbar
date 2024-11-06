@@ -13,8 +13,7 @@
     // listen for changes so we auto-adjust based on system settings
     const matcher = window.matchMedia('(prefers-color-scheme: dark)');
     matcher.addEventListener('change', $appearance.setMatchTheme);
-    return () =>
-      matcher.removeEventListener('change', $appearance.setMatchTheme);
+    return () => matcher.removeEventListener('change', $appearance.setMatchTheme);
   });
 </script>
 
@@ -23,8 +22,7 @@
   <script>
     if (
       localStorage.getItem('gitbar-theme') === 'dark' ||
-      (!localStorage.getItem('gitbar-theme') &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
+      (!localStorage.getItem('gitbar-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
     ) {
       document.documentElement.classList.add('dark');
     } else {

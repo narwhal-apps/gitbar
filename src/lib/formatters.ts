@@ -13,11 +13,7 @@ const MONTH_NAMES = [
   'December',
 ];
 
-function getFormattedDate(
-  date: Date,
-  preformattedDate: boolean | string = false,
-  hideYear = false
-) {
+function getFormattedDate(date: Date, preformattedDate: boolean | string = false, hideYear = false) {
   const day = date.getDate();
   const month = MONTH_NAMES[date.getMonth()];
   const year = date.getFullYear();

@@ -29,12 +29,12 @@
   };
 </script>
 
-<footer class="fixed bottom-0 left-0 bg-muted shadow-md w-full px-2 py-2">
+<footer class="fixed bottom-0 left-0 w-full bg-muted px-2 py-2 shadow-md">
   <div class="flex justify-between">
-    <div class="p-2 flex items-center">
+    <div class="flex items-center p-2">
       <Avatar.Root class="h-6 w-6 flex-shrink-0">
         <Avatar.Image src={$auth.account?.user?.avatar_url} alt={$auth.account?.user?.name || ''} />
-        <Avatar.Fallback class="text-xs font-medium uppercase text-muted-foreground border border-muted"
+        <Avatar.Fallback class="border border-muted text-xs font-medium uppercase text-muted-foreground"
           >{avatarFallback($auth.account?.user?.name)}</Avatar.Fallback
         >
       </Avatar.Root>
@@ -48,8 +48,9 @@
       >
     </div>
     <div class="flex justify-between">
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={startFetch}
         title="Fetch"
       >
@@ -66,8 +67,9 @@
           ></path></svg
         >
       </button>
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={() => (filterVisible = true)}
         title="Filter"
       >
@@ -76,7 +78,7 @@
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          class="w-4 h-4"
+          class="h-4 w-4"
           stroke="none"
           fill="currentColor"
           ><path
@@ -86,8 +88,9 @@
           ></path></svg
         >
       </button>
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={() => (settingsVisible = true)}
         title="Settings"
       >
@@ -96,7 +99,7 @@
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          class="w-4 h-4"
+          class="h-4 w-4"
           stroke="none"
           fill="currentColor"
           ><path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm-1.5 0a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path><path
@@ -104,8 +107,9 @@
           ></path></svg
         >
       </button>
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={$auth.signOut}
         title="Sign Out"
       >
@@ -114,7 +118,7 @@
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          class="w-4 h-4"
+          class="h-4 w-4"
           stroke="none"
           fill="currentColor"
           ><path
