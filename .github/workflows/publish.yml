@@ -30,11 +30,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
+          cache: 'pnpm' # Set this to npm, yarn or pnpm.
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -56,7 +59,7 @@ jobs:
         # You can remove the one that doesn't apply to your app to speed up the workflow a bit.
 
       - name: install app dependencies
-        run: yarn install
+        run: pnpm install
 
       - uses: tauri-apps/tauri-action@v0
         env:

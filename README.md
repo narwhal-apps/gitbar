@@ -16,10 +16,10 @@ An system tray app for showing your pull requested reviews.
 
 ```sh
 # 1 - install dependencies
-yarn
+pnpm i
 
 # 2 - Run the App in development mode
-yarn tauri:dev
+pnpm tauri:dev
 ```
 
 > note that the first run will take time as tauri download and compile dependencies.
@@ -27,7 +27,7 @@ yarn tauri:dev
 ### Production
 
 ```sh
-yarn tauri:build
+pnpm tauri:build
 ```
 
 ## Icons
