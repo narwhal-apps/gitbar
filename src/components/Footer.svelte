@@ -7,9 +7,9 @@
   import Settings from './Settings.svelte';
   import Filters from './Filters.svelte';
 
-  let fetching = false;
-  let settingsVisible = false;
-  let filterVisible = false;
+  let fetching = $state(false);
+  let settingsVisible = $state(false);
+  let filterVisible = $state(false);
 
   const startFetch = () => {
     fetching = true;
@@ -38,19 +38,19 @@
           >{avatarFallback($auth.account?.user?.name)}</Avatar.Fallback
         >
       </Avatar.Root>
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
       <button
         class={`${
           $auth.account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
         } ml-1 block truncate`}
-        on:click={() => ($auth.account?.user?.html_url ? open($auth.account?.user?.html_url) : null)}
+        onclick={() => ($auth.account?.user?.html_url ? open($auth.account?.user?.html_url) : null)}
         >{$auth.account?.user?.name || $auth.account?.user?.email || ''}</button
       >
     </div>
     <div class="flex justify-between">
       <button
         class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={startFetch}
+        onclick={startFetch}
         title="Fetch"
       >
         <svg
@@ -68,7 +68,7 @@
       </button>
       <button
         class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={() => (filterVisible = true)}
+        onclick={() => (filterVisible = true)}
         title="Filter"
       >
         <svg
@@ -88,7 +88,7 @@
       </button>
       <button
         class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={() => (settingsVisible = true)}
+        onclick={() => (settingsVisible = true)}
         title="Settings"
       >
         <svg
@@ -106,7 +106,7 @@
       </button>
       <button
         class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={$auth.signOut}
+        onclick={$auth.signOut}
         title="Sign Out"
       >
         <svg

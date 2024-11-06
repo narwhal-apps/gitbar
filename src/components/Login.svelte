@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import { open } from '@tauri-apps/api/shell';
   import { Validators, type ValidatorFn, type ValidatorResult } from '../lib/validators';
   import { auth, createAuthURL, defaultGithubSettings, defaultSettings } from '../lib/auth';
@@ -14,9 +16,9 @@
   import { Label } from '$lib/components/ui/label';
 
   const defaultHost = 'github.com';
-  let errors: { [inputName: string]: ValidatorResult } = {};
-  let loading = false;
-  let processing = false;
+  let errors: { [inputName: string]: ValidatorResult } = $state({});
+  let loading = $state(false);
+  let processing = $state(false);
   let port: number;
   let unlistenFn: () => void;
 
@@ -117,7 +119,7 @@
 </script>
 
 <div class="m-8">
-  <form on:submit|preventDefault={onSubmit}>
+  <form onsubmit={preventDefault(onSubmit)}>
     <div class="pb-2">
       <Label for="token">Token</Label>
       <Input
@@ -135,7 +137,7 @@
         To generate a token, go to GitHub,
         <button
           class="underline hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
-          on:click={() =>
+          onclick={() =>
             open(
               'https://github.com/settings/tokens/new?description=gitbar&default_expires_at=none&scopes=repo,read:org'
             )}

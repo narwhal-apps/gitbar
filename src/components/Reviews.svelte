@@ -9,8 +9,8 @@
   import { Badge } from '$lib/components/ui/badge';
   import * as Tooltip from '$lib/components/ui/tooltip';
 
-  let loading = true;
-  let dateUpdater = 0;
+  let loading = $state(true);
+  let dateUpdater = $state(0);
   const skeletons = 5;
 
   function onClick(url: string) {
@@ -97,9 +97,9 @@
   {:else}
     <ul class="divide-y mb-14" id="reviews">
       {#each $github.reviews.data as review}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-        <li class="group p-2 hover:cursor-pointer hover:bg-muted" on:click={() => onClick(review.node.url)}>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+        <li class="group p-2 hover:cursor-pointer hover:bg-muted" onclick={() => onClick(review.node.url)}>
           <div class="flex items-start">
             <div class="pr-1">
               <span aria-label="Open pull request">
@@ -161,7 +161,7 @@
                     class="text-slate-500 dark:text-gray-300 text-sm inline-flex items-center justify-between w-full"
                     >{review.node.repository.nameWithOwner} #{review.node.number}
                     {#if !review.node.isReadByViewer}
-                      <div class="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 inline-flex mr-2" />
+                      <div class="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 inline-flex mr-2"></div>
                     {/if}</span
                   >
                   <br />

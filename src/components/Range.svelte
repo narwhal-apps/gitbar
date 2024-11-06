@@ -1,25 +1,38 @@
 <script lang="ts">
+  import { run, nonpassive } from 'svelte/legacy';
+
   import { createEventDispatcher } from 'svelte';
   import { fly, fade } from 'svelte/transition';
 
-  // Props
-  export let min = 0;
-  export let max = 100;
-  export let initialValue = 0;
-  export let id: string | null = null;
-  export let value = typeof initialValue === 'string' ? parseInt(initialValue) : initialValue;
+  
+  interface Props {
+    // Props
+    min?: number;
+    max?: number;
+    initialValue?: number;
+    id?: string | null;
+    value?: any;
+  }
+
+  let {
+    min = 0,
+    max = 100,
+    initialValue = 0,
+    id = null,
+    value = $bindable(typeof initialValue === 'string' ? parseInt(initialValue) : initialValue)
+  }: Props = $props();
 
   // Node Bindings
-  let container: any = null;
-  let thumb: any = null;
-  let progressBar: any = null;
-  let element: any = null;
+  let container: any = $state(null);
+  let thumb: any = $state(null);
+  let progressBar: any = $state(null);
+  let element: any = $state(null);
 
   // Internal State
-  let elementX: any = null;
-  let currentThumb: any = null;
-  let holding = false;
-  let thumbHover = false;
+  let elementX: any = $state(null);
+  let currentThumb: any = $state(null);
+  let holding = $state(false);
+  let thumbHover = $state(false);
   let keydownAcceleration = 0;
   let accelerationTimer: any = null;
 
@@ -133,60 +146,66 @@
   }
 
   // React to left position of element relative to window
-  $: if (element) elementX = element.getBoundingClientRect().left;
+  run(() => {
+    if (element) elementX = element.getBoundingClientRect().left;
+  });
 
   // Set a class based on if dragging
-  $: holding = Boolean(currentThumb);
+  run(() => {
+    holding = Boolean(currentThumb);
+  });
 
   // Update progressbar and thumb styles to represent value
-  $: if (progressBar && thumb) {
-    // Limit value min -> max
-    value = value > min ? value : min;
-    value = value < max ? value : max;
+  run(() => {
+    if (progressBar && thumb) {
+      // Limit value min -> max
+      value = value > min ? value : min;
+      value = value < max ? value : max;
 
-    let percent = ((value - min) * 100) / (max - min);
-    let offsetLeft = (container.clientWidth - 10) * (percent / 100) + 5;
+      let percent = ((value - min) * 100) / (max - min);
+      let offsetLeft = (container.clientWidth - 10) * (percent / 100) + 5;
 
-    // Update thumb position + active range track width
-    thumb.style.left = `${offsetLeft}px`;
-    progressBar.style.width = `${offsetLeft}px`;
-  }
+      // Update thumb position + active range track width
+      thumb.style.left = `${offsetLeft}px`;
+      progressBar.style.width = `${offsetLeft}px`;
+    }
+  });
 </script>
 
 <svelte:window
-  on:touchmove|nonpassive={updateValueOnEvent}
-  on:touchcancel={onDragEnd}
-  on:touchend={onDragEnd}
-  on:mousemove={updateValueOnEvent}
-  on:mouseup={onDragEnd}
-  on:resize={resizeWindow}
+  use:nonpassive={['touchmove', () => updateValueOnEvent]}
+  ontouchcancel={onDragEnd}
+  ontouchend={onDragEnd}
+  onmousemove={updateValueOnEvent}
+  onmouseup={onDragEnd}
+  onresize={resizeWindow}
 />
 <div class="range">
   <div
     class="range__wrapper"
     tabindex="0"
-    on:keydown={onKeyPress}
+    onkeydown={onKeyPress}
     bind:this={element}
     role="slider"
     aria-valuemin={min}
     aria-valuemax={max}
     aria-valuenow={value}
     {id}
-    on:mousedown={onTrackEvent}
-    on:touchstart={onTrackEvent}
+    onmousedown={onTrackEvent}
+    ontouchstart={onTrackEvent}
   >
     <div class="range__track" bind:this={container}>
-      <div class="range__track--highlighted" bind:this={progressBar} />
-      <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="range__track--highlighted" bind:this={progressBar}></div>
+      <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div
         class="range__thumb"
         class:range__thumb--holding={holding}
         bind:this={thumb}
-        on:touchstart={onDragStart}
-        on:mousedown={onDragStart}
-        on:mouseover={() => (thumbHover = true)}
-        on:mouseout={() => (thumbHover = false)}
+        ontouchstart={onDragStart}
+        onmousedown={onDragStart}
+        onmouseover={() => (thumbHover = true)}
+        onmouseout={() => (thumbHover = false)}
       >
         {#if holding || thumbHover}
           <div class="range__tooltip" in:fly={{ y: 7, duration: 200 }} out:fade={{ duration: 100 }}>

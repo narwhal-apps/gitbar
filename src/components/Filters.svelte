@@ -8,14 +8,18 @@
   import { Label } from '$lib/components/ui/label';
   import { Skeleton } from '$lib/components/ui/skeleton';
 
-  export let modalVisible: boolean;
-  export let onSaved: () => void;
-  let showArchive = $auth.githubSettings.archive;
-  let state = $auth.githubSettings.state;
-  let type = $auth.githubSettings.type;
-  let selectedOrganizations = $auth.githubSettings.organizations || [];
-  let organizationOptions: Array<{ value: string; label: string }> = [];
-  let loadingOrganizations = false;
+  interface Props {
+    modalVisible: boolean;
+    onSaved: () => void;
+  }
+
+  let { modalVisible = $bindable(), onSaved }: Props = $props();
+  let showArchive = $state($auth.githubSettings.archive);
+  let state = $state($auth.githubSettings.state);
+  let type = $state($auth.githubSettings.type);
+  let selectedOrganizations = $state($auth.githubSettings.organizations || []);
+  let organizationOptions: Array<{ value: string; label: string }> = $state([]);
+  let loadingOrganizations = $state(false);
 
   const changeShowArchive = (checked: boolean) => {
     showArchive = checked;

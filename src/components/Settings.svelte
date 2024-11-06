@@ -10,11 +10,15 @@
   import { Switch } from '$lib/components/ui/switch';
   import { Label } from '$lib/components/ui/label';
 
-  export let modalVisible: boolean;
-  let openAtStartup = $auth.settings?.openAtStartup;
-  let isCompactMode = $auth.settings?.isCompactMode;
-  let fetchInterval = ($auth.settings.fetchInterval || defaultSettings.fetchInterval) / 1000;
-  let app = { name: '', version: '' };
+  interface Props {
+    modalVisible: boolean;
+  }
+
+  let { modalVisible = $bindable() }: Props = $props();
+  let openAtStartup = $state($auth.settings?.openAtStartup);
+  let isCompactMode = $state($auth.settings?.isCompactMode);
+  let fetchInterval = $state(($auth.settings.fetchInterval || defaultSettings.fetchInterval) / 1000);
+  let app = $state({ name: '', version: '' });
 
   const changeAutoStart = (checked: boolean) => {
     openAtStartup = checked;

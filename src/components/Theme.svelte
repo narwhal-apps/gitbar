@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Label } from '$lib/components/ui/label';
   import { appearance } from '../lib/theme';
-  let dark = $appearance.theme === 'dark';
+  let dark = $state($appearance.theme === 'dark');
   appearance.subscribe(({ theme }) => {
     dark = theme === 'dark';
   });
@@ -14,7 +14,7 @@
     class="{dark ? 'bg-input ' : 'bg-primary'} 
     focus-visible:ring-ring focus-visible:ring-offset-background peer relative inline-flex flex-shrink-0 h-[24px] w-[44px] border-2 rounded-full border-transparent disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 cursor-pointer transition duration-200 ease-in-out"
     type="button"
-    on:click={$appearance.toggle}
+    onclick={$appearance.toggle}
   >
     <span class="sr-only">Toggle Dark Mode</span>
     <span
