@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
-
   import { open } from '@tauri-apps/api/shell';
   import { Validators, type ValidatorFn, type ValidatorResult } from '../lib/validators';
   import { auth, createAuthURL, defaultGithubSettings, defaultSettings } from '../lib/auth';
@@ -119,14 +117,14 @@
 </script>
 
 <div class="m-8">
-  <form onsubmit={preventDefault(onSubmit)}>
+  <form onsubmit={onSubmit}>
     <div class="pb-2">
       <Label for="token">Token</Label>
       <Input
         type="text"
         name="token"
         id="token"
-        on:input={onChange}
+        onchange={onChange}
         placeholder="The 40 characters token generated on GitHub"
         class="w-full"
       />
@@ -154,7 +152,7 @@
         placeholder="github.company.com"
         id="hostname"
         value={defaultHost}
-        on:input={onChange}
+        onchange={onChange}
         class="w-full"
       />
       {#if errors?.hostname?.required?.error}
@@ -194,7 +192,7 @@
         size="sm"
         class={cn('w-full', processing && 'opacity-50')}
         disabled={processing}
-        on:click={handleToken}
+        onclick={handleToken}
         title="Login via GitHub"
         >Login via GitHub
         {#if processing}

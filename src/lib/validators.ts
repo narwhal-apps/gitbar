@@ -5,8 +5,10 @@ export interface ValidatorResult {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ValidatorFn = (value: any) => ValidatorResult;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function required(value: any): ValidatorResult {
   if (value === '' || value == null) {
     return { required: { error: true, message: 'Field is required' } };

@@ -7,8 +7,6 @@
   import { Switch } from '$lib/components/ui/switch';
   import { Label } from '$lib/components/ui/label';
   import { Skeleton } from '$lib/components/ui/skeleton';
-  import Badge from '$lib/components/ui/badge/badge.svelte';
-  import Input from '$lib/components/ui/input/input.svelte';
 
   interface Props {
     modalVisible: boolean;
@@ -31,14 +29,13 @@
     $auth.updateGithubSettings({
       archive: showArchive,
       state: ghState as typeof $auth.githubSettings.state,
-      type: ghType  as typeof $auth.githubSettings.type,
+      type: ghType as typeof $auth.githubSettings.type,
       organizations: selectedOrganizations,
     });
     modalVisible = false;
     onSaved();
   };
 
-  
   const typeOptions = [
     { value: 'review-requested', label: 'Reviews' },
     { value: 'author', label: 'Created' },
@@ -52,10 +49,10 @@
   ];
 
   const getTriggerContent = (value: string[] | string, placeholder?: string, multipleMessage?: string) => {
-    if(Array.isArray(value)){
+    if (Array.isArray(value)) {
       if (value.length === 0) return placeholder;
       if (value.length === 1) return value[0];
-      return value.length + ' ' +  multipleMessage;
+      return value.length + ' ' + multipleMessage;
     } else {
       return [...typeOptions, ...stateOptions].find(option => option.value === value)?.label || placeholder;
     }
@@ -81,7 +78,7 @@
       <Label for="archive">Show archived</Label>
     </div>
     <div class="flex items-center justify-between gap-4">
-      <Select.Root type="single" items={typeOptions} onValueChange={v => ghType = v}>
+      <Select.Root type="single" items={typeOptions} onValueChange={v => (ghType = v)}>
         <Select.Trigger>
           {getTriggerContent(ghType)}
         </Select.Trigger>
@@ -91,11 +88,7 @@
           {/each}
         </Select.Content>
       </Select.Root>
-      <Select.Root
-        items={stateOptions}
-        type="single"
-        onValueChange={v => ghState = v}
-      >
+      <Select.Root items={stateOptions} type="single" onValueChange={v => (ghState = v)}>
         <Select.Trigger>
           {getTriggerContent(ghState)}
         </Select.Trigger>
@@ -114,7 +107,7 @@
           type="multiple"
           items={organizationOptions}
           bind:value={selectedOrganizations}
-          onValueChange={v => selectedOrganizations = v}
+          onValueChange={v => (selectedOrganizations = v)}
         >
           <Select.Trigger class="w-full">
             {getTriggerContent(selectedOrganizations, 'Select organizations', 'organizations selected')}

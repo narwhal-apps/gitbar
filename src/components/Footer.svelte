@@ -38,7 +38,6 @@
           >{avatarFallback($auth.account?.user?.name)}</Avatar.Fallback
         >
       </Avatar.Root>
-      <!-- svelte-ignore a11y_click_events_have_key_events -->
       <button
         class={`${
           $auth.account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''

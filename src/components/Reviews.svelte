@@ -63,7 +63,7 @@
 
 {#if loading}
   <ul class="divide-y">
-    {#each Array.from({ length: skeletons }) as _, i}
+    {#each Array.from({ length: skeletons }) as _}
       <li class="max-w m-2 mx-auto flex w-full items-center space-x-4 p-2">
         <Skeleton class="h-10 w-10 rounded-full" />
         <div class="space-y-2">
