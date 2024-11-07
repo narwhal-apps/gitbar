@@ -1,9 +1,8 @@
 <script>
   import { onMount } from 'svelte';
-  import AuthGuard from './components/AuthGuard.svelte';
-  import Footer from './components/Footer.svelte';
-  import Reviews from './components/Reviews.svelte';
-  import { appearance } from './lib/theme';
+  import Footer from './Footer.svelte';
+  import Reviews from './Reviews.svelte';
+  import { appearance } from '../lib/theme';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
 
   onMount(() => {
@@ -32,9 +31,7 @@
   </script>
 </svelte:head>
 
-<AuthGuard>
-  <ScrollArea class="h-[400px]">
-    <Reviews />
-  </ScrollArea>
-  <Footer />
-</AuthGuard>
+<ScrollArea class="h-[400px]">
+  <Reviews />
+</ScrollArea>
+
