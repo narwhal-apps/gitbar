@@ -7,6 +7,8 @@
   import { Switch } from '$lib/components/ui/switch';
   import { Label } from '$lib/components/ui/label';
   import { Skeleton } from '$lib/components/ui/skeleton';
+  import Badge from '$lib/components/ui/badge/badge.svelte';
+  import Input from '$lib/components/ui/input/input.svelte';
 
   interface Props {
     modalVisible: boolean;
@@ -15,9 +17,9 @@
 
   let { modalVisible = $bindable(), onSaved }: Props = $props();
   let showArchive = $state($auth.githubSettings.archive);
-  let state = $state($auth.githubSettings.state);
-  let type = $state($auth.githubSettings.type);
-  let selectedOrganizations = $state($auth.githubSettings.organizations || []);
+  let ghState = $state<string>($auth.githubSettings.state || 'open');
+  let ghType = $state<string>($auth.githubSettings.type || 'review-requested');
+  let selectedOrganizations = $state<string[]>($auth.githubSettings.organizations || []);
   let organizationOptions: Array<{ value: string; label: string }> = $state([]);
   let loadingOrganizations = $state(false);
 
@@ -28,22 +30,15 @@
   const onSave = () => {
     $auth.updateGithubSettings({
       archive: showArchive,
-      state,
-      type,
+      state: ghState as typeof $auth.githubSettings.state,
+      type: ghType  as typeof $auth.githubSettings.type,
       organizations: selectedOrganizations,
     });
     modalVisible = false;
     onSaved();
   };
 
-  const updateSelectedOrganizations = (target: any) => {
-    const incoming = target as { value: string; label: string }[];
-    selectedOrganizations = incoming.map(i => i.value);
-  };
-
-  const updateType = (target: any) => (type = target.value);
-  const updateState = (target: any) => (state = target.value);
-
+  
   const typeOptions = [
     { value: 'review-requested', label: 'Reviews' },
     { value: 'author', label: 'Created' },
@@ -55,6 +50,16 @@
     { value: 'closed', label: 'Closed' },
     { value: 'all', label: 'All' },
   ];
+
+  const getTriggerContent = (value: string[] | string, placeholder?: string, multipleMessage?: string) => {
+    if(Array.isArray(value)){
+      if (value.length === 0) return placeholder;
+      if (value.length === 1) return value[0];
+      return value.length + ' ' +  multipleMessage;
+    } else {
+      return [...typeOptions, ...stateOptions].find(option => option.value === value)?.label || placeholder;
+    }
+  };
 
   onMount(() => {
     if (!$auth.account) return;
@@ -76,9 +81,9 @@
       <Label for="archive">Show archived</Label>
     </div>
     <div class="flex items-center justify-between gap-4">
-      <Select.Root items={typeOptions} selected={typeOptions.find(v => v.value === type)} onSelectedChange={updateType}>
+      <Select.Root type="single" items={typeOptions} onValueChange={v => ghType = v}>
         <Select.Trigger>
-          <Select.Value placeholder="Type" />
+          {getTriggerContent(ghType)}
         </Select.Trigger>
         <Select.Content>
           {#each typeOptions as { value, label }}
@@ -88,11 +93,11 @@
       </Select.Root>
       <Select.Root
         items={stateOptions}
-        selected={stateOptions.find(v => v.value === state)}
-        onSelectedChange={updateState}
+        type="single"
+        onValueChange={v => ghState = v}
       >
         <Select.Trigger>
-          <Select.Value placeholder="State" />
+          {getTriggerContent(ghState)}
         </Select.Trigger>
         <Select.Content>
           {#each stateOptions as { value, label }}
@@ -106,13 +111,13 @@
         <Skeleton class="h-10 w-full" />
       {:else if organizationOptions.length !== 0}
         <Select.Root
+          type="multiple"
           items={organizationOptions}
-          selected={selectedOrganizations.map(v => ({ value: v, label: v }))}
-          multiple
-          onSelectedChange={updateSelectedOrganizations}
+          bind:value={selectedOrganizations}
+          onValueChange={v => selectedOrganizations = v}
         >
           <Select.Trigger class="w-full">
-            <Select.Value placeholder="Organizations" />
+            {getTriggerContent(selectedOrganizations, 'Select organizations', 'organizations selected')}
           </Select.Trigger>
           <Select.Content>
             {#each organizationOptions as { value, label }}
@@ -124,6 +129,6 @@
     </div>
   </div>
   <div class="relative mt-4 flex items-end justify-end">
-    <Button type="button" size="sm" on:click={onSave}>Save</Button>
+    <Button type="button" size="sm" onclick={onSave}>Save</Button>
   </div>
 </div>

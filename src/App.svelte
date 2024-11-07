@@ -4,6 +4,7 @@
   import Footer from './components/Footer.svelte';
   import Reviews from './components/Reviews.svelte';
   import { appearance } from './lib/theme';
+  import { ScrollArea } from '$lib/components/ui/scroll-area'
 
   onMount(() => {
     // use the existence of the dark class on the html element for the initial value
@@ -32,6 +33,8 @@
 </svelte:head>
 
 <AuthGuard>
-  <Reviews />
+  <ScrollArea class="h-[400px]">
+    <Reviews />
+  </ScrollArea>
   <Footer />
 </AuthGuard>
