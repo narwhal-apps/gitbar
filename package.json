@@ -10,37 +10,48 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "bump": "sh ./bump.sh"
+    "bump": "sh ./bump.sh",
+    "format": "prettier --write ./src",
+    "lint": "eslint --config ./eslint.config.js ./src"
   },
   "dependencies": {
     "@tauri-apps/api": "^1.6.0",
-    "bits-ui": "^0.21.16",
+    "bits-ui": "1.0.0-next.45",
     "clsx": "2.1.1",
-    "svelte": "4.2.19",
+    "svelte": "^5.1.12",
     "tailwind-merge": "2.5.3",
     "tailwind-variants": "0.2.1"
   },
+  "engines": {
+    "node": "v22.9.0"
+  },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "3.1.2",
-    "@tauri-apps/cli": "^1.6.1",
+    "@eslint/js": "^9.14.0",
+    "@sveltejs/adapter-static": "^3.0.6",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@tauri-apps/cli": "^1.6.3",
     "@tsconfig/svelte": "5.0.4",
-    "autoprefixer": "^10.4.13",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "22.9.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-svelte": "2.46.0",
+    "globals": "^15.12.0",
     "lucide-svelte": "^0.452.0",
-    "postcss": "^8.4.18",
+    "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
+    "prettier-plugin-svelte": "^3.2.7",
+    "prettier-plugin-tailwindcss": "^0.6.8",
     "svelte-check": "4.0.4",
+    "svelte-eslint-parser": "0.43.0",
     "svelte-preprocess": "6.0.3",
     "tailwindcss": "3.4.13",
     "tslib": "2.7.0",
     "typescript": "5.6.3",
+    "typescript-eslint": "^8.13.0",
     "vite": "5.4.8"
-  },
-  "prettier": {
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "semi": true,
-    "singleQuote": true,
-    "printWidth": 120,
-    "arrowParens": "avoid"
   },
   "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"
 }

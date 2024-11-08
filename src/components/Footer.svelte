@@ -7,9 +7,9 @@
   import Settings from './Settings.svelte';
   import Filters from './Filters.svelte';
 
-  let fetching = false;
-  let settingsVisible = false;
-  let filterVisible = false;
+  let fetching = $state(false);
+  let settingsVisible = $state(false);
+  let filterVisible = $state(false);
 
   const startFetch = () => {
     fetching = true;
@@ -29,28 +29,28 @@
   };
 </script>
 
-<footer class="fixed bottom-0 left-0 bg-muted shadow-md w-full px-2 py-2">
+<footer class="fixed bottom-0 left-0 w-full bg-muted px-2 py-2 shadow-md">
   <div class="flex justify-between">
-    <div class="p-2 flex items-center">
+    <div class="flex items-center p-2">
       <Avatar.Root class="h-6 w-6 flex-shrink-0">
         <Avatar.Image src={$auth.account?.user?.avatar_url} alt={$auth.account?.user?.name || ''} />
-        <Avatar.Fallback class="text-xs font-medium uppercase text-muted-foreground border border-muted"
+        <Avatar.Fallback class="border border-muted text-xs font-medium uppercase text-muted-foreground"
           >{avatarFallback($auth.account?.user?.name)}</Avatar.Fallback
         >
       </Avatar.Root>
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
       <button
         class={`${
           $auth.account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
         } ml-1 block truncate`}
-        on:click={() => ($auth.account?.user?.html_url ? open($auth.account?.user?.html_url) : null)}
+        onclick={() => ($auth.account?.user?.html_url ? open($auth.account?.user?.html_url) : null)}
         >{$auth.account?.user?.name || $auth.account?.user?.email || ''}</button
       >
     </div>
     <div class="flex justify-between">
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={startFetch}
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
+        onclick={startFetch}
         title="Fetch"
       >
         <svg
@@ -66,9 +66,10 @@
           ></path></svg
         >
       </button>
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={() => (filterVisible = true)}
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
+        onclick={() => (filterVisible = true)}
         title="Filter"
       >
         <svg
@@ -76,7 +77,7 @@
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          class="w-4 h-4"
+          class="h-4 w-4"
           stroke="none"
           fill="currentColor"
           ><path
@@ -86,9 +87,10 @@
           ></path></svg
         >
       </button>
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={() => (settingsVisible = true)}
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
+        onclick={() => (settingsVisible = true)}
         title="Settings"
       >
         <svg
@@ -96,7 +98,7 @@
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          class="w-4 h-4"
+          class="h-4 w-4"
           stroke="none"
           fill="currentColor"
           ><path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm-1.5 0a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path><path
@@ -104,9 +106,10 @@
           ></path></svg
         >
       </button>
+      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
-        class="p-2 dark:text-white dark:hover:text-white/70 text-slate-600 hover:text-slate-600/70"
-        on:click={$auth.signOut}
+        class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
+        onclick={$auth.signOut}
         title="Sign Out"
       >
         <svg
@@ -114,7 +117,7 @@
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          class="w-4 h-4"
+          class="h-4 w-4"
           stroke="none"
           fill="currentColor"
           ><path

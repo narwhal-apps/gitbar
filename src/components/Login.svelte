@@ -14,9 +14,9 @@
   import { Label } from '$lib/components/ui/label';
 
   const defaultHost = 'github.com';
-  let errors: { [inputName: string]: ValidatorResult } = {};
-  let loading = false;
-  let processing = false;
+  let errors: { [inputName: string]: ValidatorResult } = $state({});
+  let loading = $state(false);
+  let processing = $state(false);
   let port: number;
   let unlistenFn: () => void;
 
@@ -117,25 +117,25 @@
 </script>
 
 <div class="m-8">
-  <form on:submit|preventDefault={onSubmit}>
+  <form onsubmit={onSubmit}>
     <div class="pb-2">
       <Label for="token">Token</Label>
       <Input
         type="text"
         name="token"
         id="token"
-        on:input={onChange}
+        onchange={onChange}
         placeholder="The 40 characters token generated on GitHub"
         class="w-full"
       />
       {#if errors?.token?.required?.error}
-        <p class="text-red-400 dark:text-red-300 text-sm">Token is required</p>
+        <p class="text-sm text-red-400 dark:text-red-300">Token is required</p>
       {/if}
       <span class="text-sm">
         To generate a token, go to GitHub,
         <button
-          class="underline hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
-          on:click={() =>
+          class="cursor-pointer underline hover:text-gray-500 dark:hover:text-gray-300"
+          onclick={() =>
             open(
               'https://github.com/settings/tokens/new?description=gitbar&default_expires_at=none&scopes=repo,read:org'
             )}
@@ -152,7 +152,7 @@
         placeholder="github.company.com"
         id="hostname"
         value={defaultHost}
-        on:input={onChange}
+        onchange={onChange}
         class="w-full"
       />
       {#if errors?.hostname?.required?.error}
@@ -172,7 +172,7 @@
         type="submit"
         >Submit {#if loading}
           <svg
-            class="animate-spin h-4 w-4 text-white ml-3"
+            class="ml-3 h-4 w-4 animate-spin text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -192,12 +192,12 @@
         size="sm"
         class={cn('w-full', processing && 'opacity-50')}
         disabled={processing}
-        on:click={handleToken}
+        onclick={handleToken}
         title="Login via GitHub"
         >Login via GitHub
         {#if processing}
           <svg
-            class="animate-spin h-4 w-4 text-white ml-3"
+            class="ml-3 h-4 w-4 animate-spin text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

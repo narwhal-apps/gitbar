@@ -58,6 +58,7 @@ const updateSettings = (data: SettingsState) => {
   switch (data['openAtStartup'] as boolean) {
     case true:
       enable();
+      break;
     case false:
       disable();
   }

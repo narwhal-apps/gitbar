@@ -4,6 +4,7 @@
   import Footer from './components/Footer.svelte';
   import Reviews from './components/Reviews.svelte';
   import { appearance } from './lib/theme';
+  import { ScrollArea } from '$lib/components/ui/scroll-area';
 
   onMount(() => {
     // use the existence of the dark class on the html element for the initial value
@@ -13,8 +14,7 @@
     // listen for changes so we auto-adjust based on system settings
     const matcher = window.matchMedia('(prefers-color-scheme: dark)');
     matcher.addEventListener('change', $appearance.setMatchTheme);
-    return () =>
-      matcher.removeEventListener('change', $appearance.setMatchTheme);
+    return () => matcher.removeEventListener('change', $appearance.setMatchTheme);
   });
 </script>
 
@@ -23,8 +23,7 @@
   <script>
     if (
       localStorage.getItem('gitbar-theme') === 'dark' ||
-      (!localStorage.getItem('gitbar-theme') &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
+      (!localStorage.getItem('gitbar-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
     ) {
       document.documentElement.classList.add('dark');
     } else {
@@ -34,6 +33,8 @@
 </svelte:head>
 
 <AuthGuard>
-  <Reviews />
+  <ScrollArea class="h-[400px]">
+    <Reviews />
+  </ScrollArea>
   <Footer />
 </AuthGuard>
