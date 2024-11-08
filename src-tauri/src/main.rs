@@ -89,6 +89,7 @@ fn main() {
     );
 
     let menu = Menu::new().add_submenu(edit_menu);
+    
 
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
@@ -140,7 +141,8 @@ fn main() {
             tauri::WindowEvent::Focused(false) => {
                 // hide the window automatically when the user
                 // clicks out. this is for a matter of taste.
-                event.window().hide().unwrap();
+                // disabled while coding
+                // event.window().hide().unwrap();
             }
             _ => {}
         })

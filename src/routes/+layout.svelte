@@ -1,25 +1,21 @@
 <script lang="ts">
   import AuthGuard from '../components/AuthGuard.svelte';
-  import * as Sidebar from '$lib/components/ui/sidebar';
-  import { Separator } from '$lib/components/ui/separator';
-  import AppSidebar from '../components/AppSidebar.svelte';
+  // import * as Sidebar from '$lib/components/ui/sidebar';
+  // import AppSidebar from '../components/experiments/AppSidebar.svelte';
   import '../app.css';
   let { children } = $props();
+  // let open = $state(false);
 </script>
 
 <AuthGuard>
-  <Sidebar.Provider>
+    {@render children?.()}
+</AuthGuard>
+<!-- <AuthGuard>
+  <Sidebar.Provider controlledOpen {open} onOpenChange={(value) => (open = value)}>
     <AppSidebar />
     <Sidebar.Inset>
-      <header
-        class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
-      >
-        <div class="flex items-center gap-2 px-4">
-          <Sidebar.Trigger class="-ml-1" />
-          <Separator orientation="vertical" class="mr-2 h-4" />
-        </div>
-      </header>
-      {@render children?.()}
-    </Sidebar.Inset>
+      <Sidebar.Rail data-open={open} class="h-full w-2 pl-2 data-[open='true']:cursor-w-resize data-[open='false']:cursor-e-resize" onclick={() => open = !open}  />
+        {@render children?.()}
+      </Sidebar.Inset>
   </Sidebar.Provider>
-</AuthGuard>
+</AuthGuard> -->

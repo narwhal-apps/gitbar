@@ -34,4 +34,5 @@
 <ScrollArea class="h-[400px]">
   <Reviews />
 </ScrollArea>
+<Footer />
 

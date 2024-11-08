@@ -6,15 +6,16 @@
   import Command from 'lucide-svelte/icons/command';
   import GalleryVerticalEnd from 'lucide-svelte/icons/gallery-vertical-end';
   import AudioWaveform from "lucide-svelte/icons/audio-waveform";
+  import { auth } from '../../lib/auth';
 
 
-  let { ref = $bindable(null), collapsible = 'icon', ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+  let { ref = $bindable(null), collapsible = "icon", ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 
   const data = {
     user: {
-      name: 'shadcn',
-      email: 'm@example.com',
-      avatar: '/avatars/shadcn.jpg',
+      name: $auth.account?.user?.name!,
+      email: $auth.account?.user?.email!,
+      avatar: $auth.account?.user?.avatar_url!,
     },
     teams: [
       {
@@ -36,15 +37,16 @@
   };
 </script>
 
-<Sidebar.Root bind:ref {collapsible} {...restProps}>
-  <Sidebar.Header>
-    <SidebarOrg teams={data.teams} />
-  </Sidebar.Header>
-  <Sidebar.Content>
-    
-  </Sidebar.Content>
-	<Sidebar.Footer>
-		<SidebarUser user={data.user} />
-	</Sidebar.Footer>
-  <Sidebar.Rail />
+<Sidebar.Root bind:ref {...restProps} {collapsible} >
+    <Sidebar.Header >
+      <SidebarOrg teams={data.teams} />
+    </Sidebar.Header>
+    <Sidebar.Content>
+      <div>
+        
+      </div>
+    </Sidebar.Content>
+    <Sidebar.Footer>
+      <SidebarUser user={data.user} />
+    </Sidebar.Footer>
 </Sidebar.Root>
