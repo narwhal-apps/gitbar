@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { open } from '@tauri-apps/api/shell';
+  import { open } from '@tauri-apps/plugin-shell';
   import { auth } from '../lib/auth';
   import { github } from '../lib/github';
   import * as Dialog from '$lib/components/ui/dialog';

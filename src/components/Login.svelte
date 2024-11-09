@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { open } from '@tauri-apps/api/shell';
+  import { open } from '@tauri-apps/plugin-shell';
   import { Validators, type ValidatorFn, type ValidatorResult } from '../lib/validators';
   import { auth, createAuthURL, defaultGithubSettings, defaultSettings } from '../lib/auth';
   import { onDestroy, onMount } from 'svelte';
   import { getServerPort } from '../lib/app';
-  import { invoke } from '@tauri-apps/api/tauri';
+  import { invoke } from '@tauri-apps/api/core';
   import { getAccessToken, getUserData } from '../lib/api';
   import { listen } from '@tauri-apps/api/event';
   import { saveState } from '../lib/storage';

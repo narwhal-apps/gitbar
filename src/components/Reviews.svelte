@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { open } from '@tauri-apps/api/shell';
+  import { open } from '@tauri-apps/plugin-shell';
   import { timeAgo } from '../lib/formatters';
   import { github } from '../lib/github';
   import { auth, defaultSettings } from '../lib/auth';

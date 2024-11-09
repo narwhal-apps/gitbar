@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 
 export async function isEnabled(): Promise<boolean> {
   return await invoke('plugin:autostart|is_enabled');

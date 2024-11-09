@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { AuthState, GithubSettings, Review } from '../types';
 import { getReviews } from './api';
 import { invoke } from '@tauri-apps/api';
-import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
+import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification';
 
 const reviews = {
   count: 0,

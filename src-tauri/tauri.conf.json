@@ -3,76 +3,56 @@
   "build": {
     "beforeBuildCommand": "pnpm build",
     "beforeDevCommand": "pnpm dev",
-    "devPath": "http://localhost:3000",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3000"
   },
-  "package": {
-    "productName": "GitBar"
-  },
-  "tauri": {
-    "allowlist": {
-      "http": {
-        "request": true,
-        "scope": [
-          "https://**",
-          "https://github.com/*",
-          "https://api.github.com/*",
-          "http://localhost:44212/*",
-          "http://localhost:23212/*",
-          "http://localhost:44331/*"
-        ]
-      },
-      "notification": {
-        "all": true
-      },
-      "shell": {
-        "open": true
-      },
-      "window": {
-        "setSize": true
-      }
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "targets": "all",
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
     },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
+    "longDescription": "Github reviews in your system taskbar",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
-      "identifier": "com.gitbar.dev",
-      "longDescription": "Github reviews in your system taskbar",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
     },
-    "security": {
-      "csp": null
-    },
+    "createUpdaterArtifacts": "v1Compatible"
+  },
+  "productName": "GitBar",
+  "mainBinaryName": "GitBar",
+  "identifier": "com.gitbar.dev",
+  "plugins": {
     "updater": {
-      "active": true,
-      "endpoints": ["https://gitbar-update-server.vercel.app/update/{{target}}/{{current_version}}"],
-      "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEYxMTYzNDYzNzU1QzYxQkIKUldTN1lWeDFZelFXOFJBZlp3OFZYWFZvK2c3RU5xSGZwVE45ciswWGpwRUdTRXBJbzFnMmRZZlgK"
-    },
-    "systemTray": {
-      "iconPath": "icons/tray.png",
-      "iconAsTemplate": true,
-      "menuOnLeftClick": false
-    },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEYxMTYzNDYzNzU1QzYxQkIKUldTN1lWeDFZelFXOFJBZlp3OFZYWFZvK2c3RU5xSGZwVE45ciswWGpwRUdTRXBJbzFnMmRZZlgK",
+      "endpoints": [
+        "https://gitbar-update-server.vercel.app/update/{{target}}/{{current_version}}"
+      ]
+    }
+  },
+  "app": {
     "windows": [
       {
         "fullscreen": false,
@@ -85,6 +65,14 @@
         "titleBarStyle": "Overlay",
         "decorations": true
       }
-    ]
+    ],
+    "trayIcon": {
+      "iconPath": "icons/tray.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": false
+    },
+    "security": {
+      "csp": null
+    }
   }
 }

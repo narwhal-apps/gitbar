@@ -1,4 +1,4 @@
-import { ResponseType, fetch } from '@tauri-apps/api/http';
+import { ResponseType, fetch } from '@tauri-apps/plugin-http';
 
 export const SERVER_PORTS = [44212, 23212, 44331];
 

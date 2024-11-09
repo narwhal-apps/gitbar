@@ -1,5 +1,5 @@
 import type { AuthState, GetAccessTokenArgs, GetAccessTokenResponse, GithubSettings, Review, User } from '../types';
-import { getClient, fetch, ResponseType, Body } from '@tauri-apps/api/http';
+import { getClient, fetch, ResponseType, Body } from '@tauri-apps/plugin-http';
 
 export async function getAccessToken({ clientId, clientSecret, code, hostname }: GetAccessTokenArgs) {
   const body = Body.json({
