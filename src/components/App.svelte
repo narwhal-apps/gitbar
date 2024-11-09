@@ -1,9 +1,9 @@
 <script>
   import { onMount } from 'svelte';
-  import AuthGuard from './components/AuthGuard.svelte';
-  import Footer from './components/Footer.svelte';
-  import Reviews from './components/Reviews.svelte';
-  import { appearance } from './lib/theme';
+  import AuthGuard from './AuthGuard.svelte';
+  import Footer from './Footer.svelte';
+  import Reviews from './Reviews.svelte';
+  import { appearance } from '../lib/theme';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
 
   onMount(() => {
