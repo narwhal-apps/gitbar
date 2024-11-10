@@ -1,5 +1,5 @@
 import type { AuthState, GithubSettings, SettingsState } from '../types';
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 import { github } from './github';
 import { disable } from './auto-start';
 

@@ -72,14 +72,10 @@ impl<R: Runtime> WindowExt for WebviewWindow<R> {
 
 pub fn main() {
     #[cfg(debug_assertions)]
-    let devtools = tauri_plugin_devtools::init(); // initialize the plugin as early as possible
-
-    let mut builder = tauri::Builder::default();
-
-    #[cfg(debug_assertions)]
-    {
-        builder = builder.plugin(devtools);
-    }
+    let builder = tauri::Builder::default().plugin(tauri_plugin_devtools::init());
+    #[cfg(not(debug_assertions))]
+    let builder = tauri::Builder::default();
+    
 
     let app = builder
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -107,14 +103,11 @@ pub fn main() {
                 .decorations(true)
                 .visible(false);
 
-            // set transparent title bar only when building for macOS
-            #[cfg(target_os = "macos")]
-            let win_builder = win_builder.title_bar_style(TitleBarStyle::Transparent);
-
-            let window: tauri::WebviewWindow = win_builder.build().unwrap();
+                let window: tauri::WebviewWindow = win_builder.build().unwrap();
 
             #[cfg(target_os = "macos")]
             window.set_transparent_titlebar(true, true);
+            
             window.set_always_on_top(true).unwrap();
 
             #[cfg(debug_assertions)]

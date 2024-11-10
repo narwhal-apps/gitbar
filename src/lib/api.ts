@@ -1,20 +1,20 @@
 import type { AuthState, GetAccessTokenArgs, GetAccessTokenResponse, GithubSettings, Review, User } from '../types';
-import { getClient, fetch, ResponseType, Body } from '@tauri-apps/plugin-http';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function getAccessToken({ clientId, clientSecret, code, hostname }: GetAccessTokenArgs) {
-  const body = Body.json({
-    client_id: clientId,
-    client_secret: clientSecret,
-    code,
-  });
+  
 
   const res = await fetch<GetAccessTokenResponse>(`https://${hostname}/login/oauth/access_token`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
     },
-    body,
-    responseType: ResponseType.JSON,
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      code,
+    }),
+    responseType: 'json',
   });
 
   if (!res.ok) {
@@ -25,17 +25,12 @@ export async function getAccessToken({ clientId, clientSecret, code, hostname }:
 }
 
 export const getUserData = async (token: string, hostname: string): Promise<User> => {
-  const client = await getClient();
-  const response: {
-    data: User;
-  } = await client.get(`https://api.${hostname}/user`, {
-    responseType: ResponseType.JSON,
-    headers: {
-      Authorization: `token ${token}`,
-    },
+  const response = await fetch(`https://api.${hostname}/user`, {
+    method: 'GET',
+    headers: { Accept: 'application/json', Authorization: `token ${token}`, },
   });
 
-  const { data } = response;
+  const { data } = response; 
 
   return {
     id: data.id,
