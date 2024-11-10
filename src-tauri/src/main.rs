@@ -10,7 +10,7 @@ mod server;
 mod system_tray;
 mod utils;
 
-use commands::{start_server, stop_server};
+use commands::{start_server, stop_server, set_review_count};
 use server::AuthServer;
 
 use std::sync::Mutex;
@@ -71,7 +71,17 @@ impl<R: Runtime> WindowExt for WebviewWindow<R> {
 }
 
 pub fn main() {
-    let app = tauri::Builder::default()
+    #[cfg(debug_assertions)]
+    let devtools = tauri_plugin_devtools::init(); // initialize the plugin as early as possible
+
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(debug_assertions)]
+    {
+        builder = builder.plugin(devtools);
+    }
+
+    let app = builder
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_notification::init())
@@ -107,42 +117,15 @@ pub fn main() {
             window.set_transparent_titlebar(true, true);
             window.set_always_on_top(true).unwrap();
 
+            #[cfg(debug_assertions)]
             window.open_devtools();
 
-            system_tray::setup_system_tray(app);
-
-            // let autostart_manager = app.autolaunch();
-            // let enabled = autostart_manager.is_enabled().unwrap();
-
-            // tray.on_tray_icon_event(|tray, event| match event {
-            //     TrayIconEvent::Click {
-            //         button: MouseButton::Left,
-            //         button_state: MouseButtonState::Up,
-            //         ..
-            //     } => {
-            //         println!("left click pressed and released");
-            //         // in this example, let's show and focus the main window when the tray is clicked
-            //         let app = tray.app_handle();
-            //         if let Some(w) = app.get_webview_window("main") {
-            //             let visible = w.is_visible().unwrap();
-            //             if visible {
-            //                 w.hide().unwrap();
-            //             } else {
-            //                 let _ = w.as_ref().window().move_window(Position::TrayCenter);
-            //                 w.show().unwrap();
-            //                 w.set_focus().unwrap();
-            //             }
-            //         }
-            //     }
-            //     _ => {
-            //         println!("unhandled event {event:?}");
-            //     }
-            // });
+            system_tray::setup(app);
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            // set_review_count,
+            set_review_count,
             start_server,
             stop_server
         ])

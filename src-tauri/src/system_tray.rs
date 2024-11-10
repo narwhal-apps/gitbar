@@ -6,7 +6,7 @@ use tauri::{
 };
 use tauri_plugin_positioner::{Position, WindowExt};
 
-pub fn setup_system_tray(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
+pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     // #[cfg(desktop)]
     // {
     //     app.handle().plugin(tauri_plugin_positioner::init());
