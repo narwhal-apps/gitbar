@@ -53,24 +53,7 @@
     }
   },
   "app": {
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 400,
-        "resizable": false,
-        "title": "GitBar",
-        "width": 500,
-        "visible": false,
-        "skipTaskbar": true,
-        "titleBarStyle": "Overlay",
-        "decorations": true
-      }
-    ],
-    "trayIcon": {
-      "iconPath": "icons/tray.png",
-      "iconAsTemplate": true,
-      "menuOnLeftClick": false
-    },
+    "withGlobalTauri": true,
     "security": {
       "csp": null
     }

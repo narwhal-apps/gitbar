@@ -1,4 +1,4 @@
-use tauri::Window;
+use tauri::{Window, Emitter};
 
 use std::{io::Cursor, net::SocketAddr, str::FromStr, sync::Arc};
 

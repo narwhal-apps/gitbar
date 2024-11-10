@@ -28,12 +28,14 @@ port_scanner = "*"
 tauri-plugin-notification = "2"
 tauri-plugin-http = "2"
 tauri-plugin-shell = "2"
+dark-light = "1.1.1"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 cocoa = "0.24"
 objc = "0.2.7"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-autostart = "2"
 tauri-plugin-updater = "2"
 
 [features]
