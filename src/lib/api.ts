@@ -2,9 +2,7 @@ import type { AuthState, GetAccessTokenArgs, GetAccessTokenResponse, GithubSetti
 import { fetch } from '@tauri-apps/plugin-http';
 
 export async function getAccessToken({ clientId, clientSecret, code, hostname }: GetAccessTokenArgs) {
-  
-
-  const res = await fetch<GetAccessTokenResponse>(`https://${hostname}/login/oauth/access_token`, {
+  const res = await fetch(`https://${hostname}/login/oauth/access_token`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -14,24 +12,28 @@ export async function getAccessToken({ clientId, clientSecret, code, hostname }:
       client_secret: clientSecret,
       code,
     }),
-    responseType: 'json',
   });
 
   if (!res.ok) {
     throw res;
   }
 
-  return res;
+  return await res.json();
 }
 
 export const getUserData = async (token: string, hostname: string): Promise<User> => {
-  const response = await fetch(`https://api.${hostname}/user`, {
+  const res = await fetch(`https://api.${hostname}/user`, {
     method: 'GET',
-    headers: { Accept: 'application/json', Authorization: `token ${token}`, },
+    headers: { Accept: 'application/json', Authorization: `token ${token}` },
   });
+  
+  if (!res.ok) {
+    throw res;
+  }
 
-  const { data } = response; 
-
+  
+  const data = await res.json();
+  
   return {
     id: data.id,
     login: data.login,
@@ -41,6 +43,7 @@ export const getUserData = async (token: string, hostname: string): Promise<User
     company: data.company,
     email: data.email,
   };
+
 };
 
 export const getReviews = async (account: AuthState, settings: GithubSettings): Promise<Review> => {
@@ -93,24 +96,20 @@ export const getReviews = async (account: AuthState, settings: GithubSettings): 
   const body = {
     query: text,
   };
-  const client = await getClient();
-  const response: {
-    data: {
-      data: {
-        search: Review;
-      };
-    };
-  } = await client.post(`https://api.${account.hostname}/graphql`, Body.text(JSON.stringify(body)), {
+  // const client = await getClient();
+  const response = await fetch(`https://api.${account.hostname}/graphql`, {
+    method: 'POST',
     headers: {
       Authorization: `token ${account.token}`,
     },
+    body: JSON.stringify(body),
   });
-  const { data } = response;
+  const data = await response.json();
   return data.data.search;
 };
 
 export const getOrganizations = async (account: AuthState): Promise<string[]> => {
-  const client = await getClient();
+  
   const text = `
   {
     viewer {
@@ -139,13 +138,15 @@ export const getOrganizations = async (account: AuthState): Promise<string[]> =>
         };
       };
     };
-  } = await client.post(`https://api.${account.hostname}/graphql`, Body.text(JSON.stringify(body)), {
+  } = await fetch(`https://api.${account.hostname}/graphql`, {
+    method: 'POST',
     headers: {
       Authorization: `token ${account.token}`,
     },
+    body: JSON.stringify(body),
   });
 
-  const { data } = response;
+  const data = await response.json();
   const orgs = data.data.viewer.organizations.nodes.map(org => org.login);
   orgs.unshift(data.data.viewer.login);
   return orgs;

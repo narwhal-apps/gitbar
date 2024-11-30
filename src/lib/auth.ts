@@ -31,14 +31,14 @@ export function createAuthURL(port: number) {
 }
 
 const signIn = async ({ token, hostname }: AuthTokenOptions) => {
-  const user = await getUserData(token, hostname);
-  if (user) {
-    const account = {
-      token,
-      hostname,
-      user,
-    };
-    auth.update(prevAuth => ({
+const user = await getUserData(token, hostname);
+if (user) {
+  const account = {
+    token,
+    hostname,
+    user,
+  };
+  auth.update(prevAuth => ({
       ...prevAuth,
       account,
     }));

@@ -26,7 +26,7 @@ pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     let menu = MenuBuilder::new(app).text("quit", "Quit").build()?;
 
     app.handle().plugin(tauri_plugin_positioner::init());
-    let _ = TrayIconBuilder::new()
+    let _ = TrayIconBuilder::with_id("gitbar-tray")
         .menu(&menu)
         .menu_on_left_click(false)
         .on_menu_event(move |_, event| match event.id().as_ref() {

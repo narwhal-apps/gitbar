@@ -5,7 +5,7 @@
   import Reviews from './Reviews.svelte';
   import { appearance } from '../lib/theme';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
-
+  
   onMount(() => {
     // use the existence of the dark class on the html element for the initial value
     let dark = document.documentElement.classList.contains('dark');

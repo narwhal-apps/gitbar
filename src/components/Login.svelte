@@ -55,13 +55,13 @@
 
   function onSubmit(e: SubmitEvent & { currentTarget: HTMLFormElement }) {
     const formData = new FormData(e.currentTarget);
-
+    
     const data: any = {};
     for (let field of formData) {
       const [key, value] = field;
       data[key] = value;
     }
-
+    
     validateForm(data);
 
     if (isFormValid()) {

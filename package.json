@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri:dev": "tauri dev",
+    "tauri:dev": "RUST_BACKTRACE=1 tauri dev",
     "tauri:build": "tauri build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "bump": "sh ./bump.sh",

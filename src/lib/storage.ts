@@ -13,7 +13,7 @@ export const loadState = (): {
   return { account, settings, githubSettings };
 };
 
-export const saveState = (account: AuthState, settings: SettingsState, githubSettings: GithubSettings): void => {
+export const saveState = (account: AuthState | undefined, settings: SettingsState, githubSettings: GithubSettings): void => {
   const settingsString = JSON.stringify({ auth: account, settings, githubSettings });
   localStorage.setItem('gitbar-storage', settingsString);
 };

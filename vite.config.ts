@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [sveltekit()],
   server: {
     port: 3000,
+    strictPort: true
   },
   resolve: {
     alias: {
