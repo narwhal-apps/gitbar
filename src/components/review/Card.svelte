@@ -3,10 +3,12 @@
   import StatusBadge from './StatusBadge.svelte';
   import RepoIcon from './RepoIcon.svelte';
   import PRIcon from './PRIcon.svelte';
-  import { appearance } from '$lib/theme';
   import { getContrastYIQ, hexToRGBA, getPRState, getStatusType, formatDate } from './utils';
+  import { getThemeContext } from '$lib/stores/contexts';
 
   let { pr }: { pr: GitHubPR } = $props();
+
+  const themeCtx = getThemeContext();
 
   let isHovered = $state(false);
 
@@ -69,7 +71,7 @@
       {/if}
       {#if pr.node.labels.edges.length > 0}
         {#each pr.node.labels.edges as label}
-          {#if $appearance.theme === 'dark'}
+          {#if themeCtx.isDark}
             <span
               class="rounded-full border px-2 text-xs text-black"
               style="color: #{label.node.color}; filter: brightness(160%); border-color: {hexToRGBA(

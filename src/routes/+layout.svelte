@@ -1,24 +1,24 @@
 <script lang="ts">
   import '../app.css';
-  import { setAuthContext } from '$lib/stores/contexts';
+  import { setAuthContext, setThemeContext } from '$lib/stores/contexts';
   import { createAuthStore } from '$lib/stores/createAuthStore.svelte';
-  import { appearance } from '$lib/theme';
   import { onMount } from 'svelte';
+  import { createThemeStore } from '$lib/stores/createThemeStore.svelte';
 
-  const store = createAuthStore();
-  setAuthContext(store);
+  const authStore = createAuthStore();
+  setAuthContext(authStore);
+
+  const themeStore = createThemeStore();
+  setThemeContext(themeStore);
 
   let { children } = $props();
   
   onMount(() => {
     // use the existence of the dark class on the html element for the initial value
-    let dark = document.documentElement.classList.contains('dark');
-    $appearance.setTheme(dark);
+    let isDark = document.documentElement.classList.contains('dark');
+    
+    themeStore.theme = isDark ? 'dark' : 'light';
 
-    // listen for changes so we auto-adjust based on system settings
-    const matcher = window.matchMedia('(prefers-color-scheme: dark)');
-    matcher.addEventListener('change', $appearance.setMatchTheme);
-    return () => matcher.removeEventListener('change', $appearance.setMatchTheme);
   });
 </script>
 

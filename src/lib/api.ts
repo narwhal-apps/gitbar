@@ -64,8 +64,6 @@ export const getUserData = async (token: string, hostname: string): Promise<User
 };
 
 export const getReviews = async (account: AuthState, settings: GithubSettings): Promise<Review> => {
-  console.log('settings :', settings);
-  console.log('account :', account);
   const orgs = settings.organizations?.map(org => `user:${org}`).join(' ');
   let search = `type:pr state:${settings.state} archived:${settings.archive} ${settings.type}:${account.user?.login}`;
   if (orgs) {
@@ -124,7 +122,6 @@ export const getReviews = async (account: AuthState, settings: GithubSettings): 
     body: JSON.stringify(body),
   });
   const data = await response.json();
-  console.log('data :', data);
   return data.data.search;
 };
 
@@ -144,20 +141,7 @@ export const getOrganizations = async (account: AuthState): Promise<string[]> =>
   const body = {
     query: text,
   };
-  const response: {
-    data: {
-      data: {
-        viewer: {
-          login: string;
-          organizations: {
-            nodes: Array<{
-              login: string;
-            }>;
-          };
-        };
-      };
-    };
-  } = await fetch(`https://api.${account.hostname}/graphql`, {
+  const response = await fetch(`https://api.${account.hostname}/graphql`, {
     method: 'POST',
     headers: {
       Authorization: `token ${account.token}`,

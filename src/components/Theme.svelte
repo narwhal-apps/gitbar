@@ -1,29 +1,27 @@
 <script lang="ts">
   import { Label } from '$lib/components/ui/label';
-  import { appearance } from '../lib/theme';
-  let dark = $state($appearance.theme === 'dark');
-  appearance.subscribe(({ theme }) => {
-    dark = theme === 'dark';
-  });
+  import { getThemeContext } from '$lib/stores/contexts';
+
+  const themeCtx = getThemeContext();
 </script>
 
 <!-- animated switch version -->
 <div class="flex flex-row items-center">
   <button
     id="dark-mode-toggle"
-    class="{dark ? 'bg-input ' : 'bg-primary'} 
+    class="{themeCtx.isDark ? 'bg-input ' : 'bg-primary'} 
     peer relative inline-flex h-[24px] w-[44px] flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
     type="button"
-    onclick={$appearance.toggle}
+    onclick={themeCtx.toggle}
   >
     <span class="sr-only">Toggle Dark Mode</span>
     <span
-      class="{dark
+      class="{themeCtx.isDark
         ? 'translate-x-0 bg-background'
         : 'translate-x-5 bg-white'} pointer-events-none relative inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
     >
       <span
-        class="{dark
+        class="{themeCtx.isDark
           ? 'opacity-100 duration-200 ease-in'
           : 'opacity-0 duration-100 ease-out'} absolute inset-0 flex h-full w-full items-center justify-center transition-opacity"
         aria-hidden="true"
@@ -34,7 +32,7 @@
         </svg>
       </span>
       <span
-        class="{dark
+        class="{themeCtx.isDark
           ? 'opacity-0 duration-100 ease-out'
           : 'opacity-100 duration-200 ease-in'} absolute inset-0 flex h-full w-full items-center justify-center transition-opacity"
         aria-hidden="true"
