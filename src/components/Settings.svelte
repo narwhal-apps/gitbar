@@ -51,7 +51,12 @@
       <Label for="open_at_start">Auto start Gitbar</Label>
     </div>
     <div class="flex items-center space-x-2">
-      <Switch id="compact_mode" name="compact_mode" checked={ghCtx.settings.isCompactMode} onCheckedChange={v => (ghCtx.settings.isCompactMode = v)} />
+      <Switch
+        id="compact_mode"
+        name="compact_mode"
+        checked={ghCtx.settings.isCompactMode}
+        onCheckedChange={v => (ghCtx.settings.isCompactMode = v)}
+      />
       <Label for="compact_mode">Compact mode</Label>
     </div>
     <!-- <Toggle name="compact_mode" checked={isCompactMode} label="Compact mode" on:change={changeCompactMode} /> -->
@@ -60,7 +65,13 @@
     <label for="fetch_interval" class="mb-4 block text-sm font-bold text-gray-700 dark:text-gray-100">
       Fetch interval <strong>{ghCtx.settings.fetchInterval} sec</strong>
     </label>
-    <Slider onValueChange={v => (ghCtx.settings.fetchInterval = v[0])} value={[ghCtx.settings.fetchInterval]} min={5} max={60} id="fetch_interval" />
+    <Slider
+      onValueChange={v => (ghCtx.settings.fetchInterval = v[0])}
+      value={[ghCtx.settings.fetchInterval]}
+      min={5}
+      max={60}
+      id="fetch_interval"
+    />
   </div>
   <div class="relative mt-4 flex items-center justify-between">
     <Badge variant="outline" class="opacity-40">{app.name}@{app.version}</Badge>

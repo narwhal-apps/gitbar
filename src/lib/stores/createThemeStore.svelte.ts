@@ -1,18 +1,18 @@
 export function createThemeStore() {
   let theme = $state<'light' | 'dark'>('dark');
-  const isDark = $derived(theme === 'dark'); 
+  const isDark = $derived(theme === 'dark');
 
   function toggle() {
     theme = isDark ? 'light' : 'dark';
   }
-  
+
   $effect(() => {
     if (isDark) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  })
+  });
 
   return {
     get theme() {
@@ -24,7 +24,7 @@ export function createThemeStore() {
     get isDark() {
       return isDark;
     },
-    toggle
+    toggle,
   };
 }
 

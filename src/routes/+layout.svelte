@@ -12,13 +12,12 @@
   setThemeContext(themeStore);
 
   let { children } = $props();
-  
+
   onMount(() => {
     // use the existence of the dark class on the html element for the initial value
     let isDark = document.documentElement.classList.contains('dark');
-    
-    themeStore.theme = isDark ? 'dark' : 'light';
 
+    themeStore.theme = isDark ? 'dark' : 'light';
   });
 </script>
 

@@ -77,12 +77,12 @@ export function createGithubStore() {
   });
 
   $effect(() => {
-    if(account){
+    if (account) {
       getOrganizations(account).then(orgs => {
         availableOrgs = orgs.map(org => ({ value: org, label: org }));
-      })
+      });
     }
-  })
+  });
 
   function updateGithubSettings() {
     saveState(account, settings, githubSettings);

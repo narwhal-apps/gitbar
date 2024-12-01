@@ -1,4 +1,4 @@
-import type { AuthState, GetAccessTokenArgs, GetAccessTokenResponse, GithubSettings, Review, User } from '../types';
+import type { AuthState, GetAccessTokenArgs, GithubSettings, Review, User } from '../types';
 import { fetch } from '@tauri-apps/plugin-http';
 import { createURL } from './url';
 
@@ -14,7 +14,6 @@ export function createAuthURL(port: number) {
 
   return createURL({ url: GITHUB_AUTHORIZE_ENDPOINT, query: GITHUB_AUTH_QUERIES });
 }
-
 
 export async function getAccessToken({ clientId, clientSecret, code, hostname }: GetAccessTokenArgs) {
   const res = await fetch(`https://${hostname}/login/oauth/access_token`, {

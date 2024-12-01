@@ -47,11 +47,21 @@
 <div class="space-y-6">
   <div class="flex flex-col gap-4">
     <div class="flex items-center space-x-2">
-      <Switch id="archive" name="archive" checked={ghCtx.githubSettings.archive} onCheckedChange={v => ghCtx.githubSettings.archive = v} />
+      <Switch
+        id="archive"
+        name="archive"
+        checked={ghCtx.githubSettings.archive}
+        onCheckedChange={v => (ghCtx.githubSettings.archive = v)}
+      />
       <Label for="archive">Show archived</Label>
     </div>
     <div class="flex items-center justify-between gap-4">
-      <Select.Root type="single" bind:value={ghCtx.githubSettings.type} items={typeOptions} onValueChange={v => (ghCtx.githubSettings.type = v)}>
+      <Select.Root
+        type="single"
+        bind:value={ghCtx.githubSettings.type}
+        items={typeOptions}
+        onValueChange={v => (ghCtx.githubSettings.type = v)}
+      >
         <Select.Trigger>
           {getTriggerContent(ghCtx.githubSettings.type)}
         </Select.Trigger>
@@ -61,7 +71,12 @@
           {/each}
         </Select.Content>
       </Select.Root>
-      <Select.Root bind:value={ghCtx.githubSettings.state} items={stateOptions} type="single" onValueChange={(v) => (ghCtx.githubSettings.state = v)}>
+      <Select.Root
+        bind:value={ghCtx.githubSettings.state}
+        items={stateOptions}
+        type="single"
+        onValueChange={v => (ghCtx.githubSettings.state = v)}
+      >
         <Select.Trigger>
           {getTriggerContent(ghCtx.githubSettings.state)}
         </Select.Trigger>
@@ -81,7 +96,11 @@
           onValueChange={v => (ghCtx.githubSettings.organizations = v)}
         >
           <Select.Trigger class="w-full">
-            {getTriggerContent(ghCtx.githubSettings.organizations ?? [], 'Select organizations', 'organizations selected')}
+            {getTriggerContent(
+              ghCtx.githubSettings.organizations ?? [],
+              'Select organizations',
+              'organizations selected'
+            )}
           </Select.Trigger>
           <Select.Content>
             {#each ghCtx.availableOrgs as { value, label }}
