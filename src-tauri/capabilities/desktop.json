@@ -1,5 +1,9 @@
 {
   "identifier": "desktop-capability",
+  "local": true,
+  "windows": [
+    "main"
+  ],
   "platforms": [
     "macOS",
     "windows",

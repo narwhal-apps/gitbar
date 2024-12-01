@@ -1,11 +1,13 @@
 <script lang="ts">
   import { open } from '@tauri-apps/plugin-shell';
-  import { auth } from '../lib/auth';
-  import { github } from '../lib/github';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as Avatar from '$lib/components/ui/avatar';
   import Settings from './Settings.svelte';
   import Filters from './Filters.svelte';
+  import { getAuthContext, getGithubContext } from '$lib/stores/contexts';
+
+  const { account, signOut } = getAuthContext();
+  const ghCtx = getGithubContext();
 
   let fetching = $state(false);
   let settingsVisible = $state(false);
@@ -13,8 +15,8 @@
 
   const startFetch = () => {
     fetching = true;
-    if ($auth.account) {
-      $github.fetchReviews($auth.account, $auth.githubSettings).finally(() => {
+    if (account) {
+      ghCtx.fetchReviews().finally(() => {
         fetching = false;
       });
     }
@@ -33,21 +35,20 @@
   <div class="flex justify-between">
     <div class="flex items-center p-2">
       <Avatar.Root class="h-6 w-6 flex-shrink-0">
-        <Avatar.Image src={$auth.account?.user?.avatar_url} alt={$auth.account?.user?.name || ''} />
+        <Avatar.Image src={account?.user?.avatar_url} alt={account?.user?.name || ''} />
         <Avatar.Fallback class="border border-muted text-xs font-medium uppercase text-muted-foreground"
-          >{avatarFallback($auth.account?.user?.name)}</Avatar.Fallback
+          >{avatarFallback(account?.user?.name)}</Avatar.Fallback
         >
       </Avatar.Root>
       <button
         class={`${
-          $auth.account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
+          account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
         } ml-1 block truncate`}
-        onclick={() => ($auth.account?.user?.html_url ? open($auth.account?.user?.html_url) : null)}
-        >{$auth.account?.user?.name || $auth.account?.user?.email || ''}</button
+        onclick={() => (account?.user?.html_url ? open(account?.user?.html_url) : null)}
+        >{account?.user?.name || account?.user?.email || ''}</button
       >
     </div>
     <div class="flex justify-between">
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={startFetch}
@@ -66,7 +67,6 @@
           ></path></svg
         >
       </button>
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={() => (filterVisible = true)}
@@ -87,7 +87,6 @@
           ></path></svg
         >
       </button>
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={() => (settingsVisible = true)}
@@ -106,10 +105,9 @@
           ></path></svg
         >
       </button>
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
-        onclick={$auth.signOut}
+        onclick={signOut}
         title="Sign Out"
       >
         <svg

@@ -1,39 +1,23 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { auth } from '../lib/auth';
-  import { getOrganizations } from '../lib/api';
   import * as Select from '$lib/components/ui/select';
   import { Button } from '$lib/components/ui/button';
   import { Switch } from '$lib/components/ui/switch';
   import { Label } from '$lib/components/ui/label';
-  import { Skeleton } from '$lib/components/ui/skeleton';
+  import { getGithubContext } from '$lib/stores/contexts';
 
   interface Props {
     modalVisible: boolean;
     onSaved: () => void;
   }
 
+  let ghCtx = getGithubContext();
+
   let { modalVisible = $bindable(), onSaved }: Props = $props();
-  let showArchive = $state($auth.githubSettings.archive);
-  let ghState = $state<string>($auth.githubSettings.state || 'open');
-  let ghType = $state<string>($auth.githubSettings.type || 'review-requested');
-  let selectedOrganizations = $state<string[]>($auth.githubSettings.organizations || []);
-  let organizationOptions: Array<{ value: string; label: string }> = $state([]);
-  let loadingOrganizations = $state(false);
 
-  const changeShowArchive = (checked: boolean) => {
-    showArchive = checked;
-  };
-
-  const onSave = () => {
-    $auth.updateGithubSettings({
-      archive: showArchive,
-      state: ghState as typeof $auth.githubSettings.state,
-      type: ghType as typeof $auth.githubSettings.type,
-      organizations: selectedOrganizations,
-    });
-    modalVisible = false;
+  const handleOnSave = () => {
+    ghCtx.updateGithubSettings();
     onSaved();
+    modalVisible = false;
   };
 
   const typeOptions = [
@@ -42,6 +26,7 @@
     { value: 'mentions', label: 'Mentions' },
     { value: 'assignee', label: 'Assigned' },
   ];
+
   const stateOptions = [
     { value: 'open', label: 'Open' },
     { value: 'closed', label: 'Closed' },
@@ -57,30 +42,18 @@
       return [...typeOptions, ...stateOptions].find(option => option.value === value)?.label || placeholder;
     }
   };
-
-  onMount(() => {
-    if (!$auth.account) return;
-    loadingOrganizations = true;
-    getOrganizations($auth.account)
-      .then(orgs => {
-        organizationOptions = orgs.map(org => ({ value: org, label: org }));
-      })
-      .finally(() => {
-        loadingOrganizations = false;
-      });
-  });
 </script>
 
 <div class="space-y-6">
   <div class="flex flex-col gap-4">
     <div class="flex items-center space-x-2">
-      <Switch id="archive" name="archive" checked={showArchive} onCheckedChange={changeShowArchive} />
+      <Switch id="archive" name="archive" checked={ghCtx.githubSettings.archive} onCheckedChange={v => ghCtx.githubSettings.archive = v} />
       <Label for="archive">Show archived</Label>
     </div>
     <div class="flex items-center justify-between gap-4">
-      <Select.Root type="single" items={typeOptions} onValueChange={v => (ghType = v)}>
+      <Select.Root type="single" bind:value={ghCtx.githubSettings.type} items={typeOptions} onValueChange={v => (ghCtx.githubSettings.type = v)}>
         <Select.Trigger>
-          {getTriggerContent(ghType)}
+          {getTriggerContent(ghCtx.githubSettings.type)}
         </Select.Trigger>
         <Select.Content>
           {#each typeOptions as { value, label }}
@@ -88,9 +61,9 @@
           {/each}
         </Select.Content>
       </Select.Root>
-      <Select.Root items={stateOptions} type="single" onValueChange={v => (ghState = v)}>
+      <Select.Root bind:value={ghCtx.githubSettings.state} items={stateOptions} type="single" onValueChange={(v) => (ghCtx.githubSettings.state = v)}>
         <Select.Trigger>
-          {getTriggerContent(ghState)}
+          {getTriggerContent(ghCtx.githubSettings.state)}
         </Select.Trigger>
         <Select.Content>
           {#each stateOptions as { value, label }}
@@ -100,20 +73,18 @@
       </Select.Root>
     </div>
     <div class="h-10">
-      {#if loadingOrganizations}
-        <Skeleton class="h-10 w-full" />
-      {:else if organizationOptions.length !== 0}
+      {#if ghCtx.availableOrgs.length !== 0}
         <Select.Root
           type="multiple"
-          items={organizationOptions}
-          bind:value={selectedOrganizations}
-          onValueChange={v => (selectedOrganizations = v)}
+          bind:value={ghCtx.githubSettings.organizations}
+          items={ghCtx.availableOrgs}
+          onValueChange={v => (ghCtx.githubSettings.organizations = v)}
         >
           <Select.Trigger class="w-full">
-            {getTriggerContent(selectedOrganizations, 'Select organizations', 'organizations selected')}
+            {getTriggerContent(ghCtx.githubSettings.organizations ?? [], 'Select organizations', 'organizations selected')}
           </Select.Trigger>
           <Select.Content>
-            {#each organizationOptions as { value, label }}
+            {#each ghCtx.availableOrgs as { value, label }}
               <Select.Item {value} {label}>{label}</Select.Item>
             {/each}
           </Select.Content>
@@ -122,6 +93,6 @@
     </div>
   </div>
   <div class="relative mt-4 flex items-end justify-end">
-    <Button type="button" size="sm" onclick={onSave}>Save</Button>
+    <Button type="button" size="sm" onclick={handleOnSave}>Save</Button>
   </div>
 </div>

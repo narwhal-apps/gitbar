@@ -1,17 +1,20 @@
 <script lang="ts">
   import { open } from '@tauri-apps/plugin-shell';
   import { Validators, type ValidatorFn, type ValidatorResult } from '../lib/validators';
-  import { auth, createAuthURL, defaultGithubSettings, defaultSettings } from '../lib/auth';
+  import { defaultGithubSettings, defaultSettings } from '../lib/stores/constants';
   import { onDestroy, onMount } from 'svelte';
   import { getServerPort } from '../lib/app';
   import { invoke } from '@tauri-apps/api/core';
-  import { getAccessToken, getUserData } from '../lib/api';
+  import { createAuthURL, getAccessToken, getUserData } from '../lib/api';
   import { listen } from '@tauri-apps/api/event';
   import { saveState } from '../lib/storage';
   import { Button } from '$lib/components/ui/button';
   import { cn } from '$lib/utils';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
+  import { getAuthContext } from '$lib/stores/contexts';
+
+  let { account, signIn, isAuthenticated } = getAuthContext();
 
   const defaultHost = 'github.com';
   let errors: { [inputName: string]: ValidatorResult } = $state({});
@@ -55,18 +58,18 @@
 
   function onSubmit(e: SubmitEvent & { currentTarget: HTMLFormElement }) {
     const formData = new FormData(e.currentTarget);
-    
+
     const data: any = {};
     for (let field of formData) {
       const [key, value] = field;
       data[key] = value;
     }
-    
+
     validateForm(data);
 
     if (isFormValid()) {
       loading = true;
-      $auth.signIn(data).finally(() => (loading = false));
+      signIn(data).finally(() => (loading = false));
     } else {
       console.log('Invalid Form');
     }
@@ -77,38 +80,36 @@
   }
 
   onMount(async () => {
-    await invoke('start_server');
-    port = await getServerPort();
-    unlistenFn = await listen('code', async (event: { payload: string }) => {
-      processing = true;
-      try {
-        const {
-          data: { access_token },
-        } = await getAccessToken({
-          clientId: import.meta.env.VITE_CLIENT_ID,
-          clientSecret: import.meta.env.VITE_CLIENT_SECRET,
-          code: event.payload,
-          hostname: defaultHost,
-        });
-
-        const user = await getUserData(access_token, defaultHost);
-        if (user) {
-          const account = {
-            token: access_token,
+    if (!isAuthenticated) {
+      await invoke('start_server');
+      port = await getServerPort();
+      unlistenFn = await listen('code', async (event: { payload: string }) => {
+        processing = true;
+        try {
+          const {
+            data: { access_token },
+          } = await getAccessToken({
+            clientId: import.meta.env.VITE_CLIENT_ID,
+            clientSecret: import.meta.env.VITE_CLIENT_SECRET,
+            code: event.payload,
             hostname: defaultHost,
-            user,
-          };
-          auth.update(prevAuth => ({
-            ...prevAuth,
-            account,
-          }));
-          saveState(account, defaultSettings, defaultGithubSettings);
+          });
+
+          const user = await getUserData(access_token, defaultHost);
+          if (user) {
+            account = {
+              token: access_token,
+              hostname: defaultHost,
+              user,
+            };
+            saveState(account, defaultSettings, defaultGithubSettings);
+          }
+          await invoke('stop_server');
+        } finally {
+          processing = false;
         }
-        await invoke('stop_server');
-      } finally {
-        processing = false;
-      }
-    });
+      });
+    }
   });
 
   onDestroy(() => {

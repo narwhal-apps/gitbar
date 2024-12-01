@@ -9,8 +9,11 @@ export async function getServerPort() {
       headers: { Accept: 'application/json' },
     });
 
-    if (res.ok && res.data.pong) {
-      return port;
+    if (res.ok) {
+      const data = await res.json();
+      if (data.pong) {
+        return port;
+      }
     }
   }
 
