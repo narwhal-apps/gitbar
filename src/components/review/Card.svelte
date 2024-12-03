@@ -80,24 +80,18 @@
         </span>
       {/if}
     </div>
-    <div class="flex flex-row gap-2 group-data-[compact=true]:gap-1 items-center">
+    <div class="flex flex-row items-center gap-2 group-data-[compact=true]:gap-1">
       {#if pr.node.labels.edges.length > 0}
         {#each pr.node.labels.edges as label}
           {#if themeCtx.isDark}
             <span
-              class="items-center rounded-full border px-2 text-xs text-black group-data-[compact=true]:text-[10px] group-data-[compact=true]:p-0"
+              class="items-center rounded-full border px-2 text-xs text-black group-data-[compact=true]:p-0 group-data-[compact=true]:text-[10px]"
               style="color: #{label.node.color}; filter: brightness(160%); border-color: {hexToRGBA(
                 label.node.color,
                 ghCtx.settings.isCompactMode ? 0 : 0.3
-              )}; background-color: {hexToRGBA(label.node.color, ghCtx.settings.isCompactMode ? 0 : 0.18)};">{label.node.name}</span
+              )}; background-color: {hexToRGBA(label.node.color, ghCtx.settings.isCompactMode ? 0 : 0.18)};"
+              >{label.node.name}</span
             >
-            <!-- <span
-              class="items-center rounded-full border px-2 text-xs text-black group-data-[compact=true]:text-[10px]"
-              style="color: #{label.node.color}; filter: brightness(160%); border-color: {hexToRGBA(
-                label.node.color,
-                0.3
-              )}; background-color: {hexToRGBA(label.node.color, 0.18)};">{label.node.name}</span
-            > -->
           {:else}
             <span
               class="rounded-full px-2 text-xs font-semibold text-black"

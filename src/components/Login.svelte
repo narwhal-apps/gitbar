@@ -1,20 +1,18 @@
 <script lang="ts">
   import { open } from '@tauri-apps/plugin-shell';
   import { Validators, type ValidatorFn, type ValidatorResult } from '../lib/validators';
-  import { defaultGithubSettings, defaultSettings } from '../lib/stores/constants';
   import { onDestroy, onMount } from 'svelte';
   import { getServerPort } from '../lib/app';
   import { invoke } from '@tauri-apps/api/core';
-  import { createAuthURL, getAccessToken, getUserData } from '../lib/api';
+  import { createAuthURL, getAccessToken } from '../lib/api';
   import { listen } from '@tauri-apps/api/event';
-  import { saveState } from '../lib/storage';
   import { Button } from '$lib/components/ui/button';
   import { cn } from '$lib/utils';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { getAuthContext } from '$lib/stores/contexts';
 
-  let { account, signIn, isAuthenticated } = getAuthContext();
+  let ghCtx = getAuthContext();
 
   const defaultHost = 'github.com';
   let errors: { [inputName: string]: ValidatorResult } = $state({});
@@ -69,7 +67,7 @@
 
     if (isFormValid()) {
       loading = true;
-      signIn(data).finally(() => (loading = false));
+      ghCtx.signIn(data).finally(() => (loading = false));
     } else {
       console.log('Invalid Form');
     }
@@ -80,31 +78,24 @@
   }
 
   onMount(async () => {
-    if (!isAuthenticated) {
+    if (!ghCtx.isAuthenticated) {
       await invoke('start_server');
       port = await getServerPort();
       unlistenFn = await listen('code', async (event: { payload: string }) => {
         processing = true;
         try {
-          const {
-            data: { access_token },
-          } = await getAccessToken({
+          const token = await getAccessToken({
             clientId: import.meta.env.VITE_CLIENT_ID,
             clientSecret: import.meta.env.VITE_CLIENT_SECRET,
             code: event.payload,
             hostname: defaultHost,
           });
 
-          const user = await getUserData(access_token, defaultHost);
-          if (user) {
-            account = {
-              token: access_token,
-              hostname: defaultHost,
-              user,
-            };
-            saveState(account, defaultSettings, defaultGithubSettings);
-          }
+          ghCtx.signIn({ token });
+
           await invoke('stop_server');
+        } catch (error) {
+          console.error('Error:', error);
         } finally {
           processing = false;
         }

@@ -19,6 +19,7 @@ export async function getAccessToken({ clientId, clientSecret, code, hostname }:
   const res = await fetch(`https://${hostname}/login/oauth/access_token`, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     body: JSON.stringify({
@@ -32,7 +33,8 @@ export async function getAccessToken({ clientId, clientSecret, code, hostname }:
     throw res;
   }
 
-  return await res.json();
+  const result = await res.json();
+  return result.access_token;
 }
 
 export const getUserData = async (token: string, hostname: string): Promise<User | void> => {

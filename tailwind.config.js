@@ -27,7 +27,7 @@ const config = {
           },
           status: {
             success: '#238636',
-            pending: '#9e6a03',
+            pending: '#eb9f09',
             failure: '#f85149'
           }
         },

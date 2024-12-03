@@ -33,7 +33,7 @@ export enum Appearance {
 }
 
 export interface AuthTokenOptions {
-  hostname: string;
+  hostname?: string;
   token: string;
 }
 

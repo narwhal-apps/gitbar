@@ -16,7 +16,7 @@ export function createAuthStore() {
     account = prevState.account;
   }
 
-  async function signIn({ token, hostname }: AuthTokenOptions): Promise<void> {
+  async function signIn({ token, hostname = 'github.com' }: AuthTokenOptions): Promise<void> {
     const user = await getUserData(token, hostname);
     if (user) {
       const updatedAccount: AuthState = {

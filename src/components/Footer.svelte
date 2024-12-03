@@ -128,6 +128,7 @@
 </footer>
 
 <Dialog.Root bind:open={settingsVisible}>
+  <Dialog.Overlay class="fixed inset-0 bg-transparent backdrop-blur-sm" />
   <Dialog.Content class="w-11/12 rounded-md">
     <Dialog.Header class="text-left">
       <Dialog.Title>Settings</Dialog.Title>
@@ -136,6 +137,7 @@
   </Dialog.Content>
 </Dialog.Root>
 <Dialog.Root bind:open={filterVisible}>
+  <Dialog.Overlay class="fixed inset-0 bg-transparent backdrop-blur-sm" />
   <Dialog.Content class="w-11/12 rounded-md">
     <Dialog.Header class="text-left">
       <Dialog.Title>Filter</Dialog.Title>
