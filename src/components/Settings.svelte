@@ -3,7 +3,7 @@
   import { getVersion, getName } from '@tauri-apps/api/app';
   import { Slider } from '$lib/components/ui/slider/index.js';
   import Theme from './Theme.svelte';
-  import { isEnabled } from '../lib/auto-start';
+  import { isEnabled } from '@tauri-apps/plugin-autostart';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
   import { Switch } from '$lib/components/ui/switch';
@@ -17,6 +17,8 @@
   let { modalVisible = $bindable() }: Props = $props();
 
   let ghCtx = getGithubContext();
+
+  $inspect(ghCtx.settings);
 
   let app = $state({ name: '', version: '' });
 
@@ -32,6 +34,7 @@
     // Not sure why invoke('plugin:autostart|is_enabled') returns false when local storage is set to true
     // Application priviliges in dev perhaps?
     isEnabled().then(active => {
+      console.log('active :', active);
       ghCtx.settings.openAtStartup = active;
     });
   });

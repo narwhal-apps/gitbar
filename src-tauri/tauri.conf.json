@@ -12,13 +12,7 @@
     "copyright": "",
     "targets": "all",
     "externalBin": [],
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
@@ -47,9 +41,7 @@
   "plugins": {
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEYxMTYzNDYzNzU1QzYxQkIKUldTN1lWeDFZelFXOFJBZlp3OFZYWFZvK2c3RU5xSGZwVE45ciswWGpwRUdTRXBJbzFnMmRZZlgK",
-      "endpoints": [
-        "https://gitbar-update-server.vercel.app/update/{{target}}/{{current_version}}"
-      ]
+      "endpoints": ["https://gitbar-update-server.vercel.app/update/{{target}}/{{current_version}}"]
     }
   },
   "app": {

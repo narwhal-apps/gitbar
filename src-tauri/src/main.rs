@@ -3,18 +3,17 @@
     windows_subsystem = "windows"
 )]
 
-use tauri::{Manager, TitleBarStyle, WebviewUrl, WebviewWindowBuilder, Runtime, WebviewWindow};
+use tauri::{Manager, Runtime, TitleBarStyle, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
 mod commands;
 mod server;
 mod system_tray;
 mod utils;
 
-use commands::{start_server, stop_server, set_review_count};
+use commands::{set_review_count, start_server, stop_server};
 use server::AuthServer;
 
 use std::sync::Mutex;
-use tauri_plugin_autostart::MacosLauncher;
 
 #[cfg(target_os = "macos")]
 use cocoa::appkit::{NSWindow, NSWindowButton, NSWindowStyleMask, NSWindowTitleVisibility};
@@ -75,7 +74,6 @@ pub fn main() {
     let builder = tauri::Builder::default().plugin(tauri_plugin_devtools::init());
     #[cfg(not(debug_assertions))]
     let builder = tauri::Builder::default();
-    
 
     let app = builder
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -83,11 +81,29 @@ pub fn main() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_http::init())
         .manage(Mutex::new(AuthServer::new()))
-        .plugin(tauri_plugin_autostart::init(
-            MacosLauncher::LaunchAgent,
-            None,
-        ))
         .setup(move |app| {
+            #[cfg(desktop)]
+            {
+                use tauri_plugin_autostart::MacosLauncher;
+                use tauri_plugin_autostart::ManagerExt;
+
+                let _ = app.handle().plugin(tauri_plugin_autostart::init(
+                    MacosLauncher::LaunchAgent,
+                    Some(vec!["--flag1", "--flag2"]),
+                ));
+
+                let autostart_manager = app.autolaunch();
+                // Enable autostart
+                let _ = autostart_manager.enable();
+                // Check enable state
+                println!(
+                    "registered for autostart? {}",
+                    autostart_manager.is_enabled().unwrap()
+                );
+                // Disable autostart
+                let _ = autostart_manager.disable();
+            }
+
             #[cfg(target_os = "macos")]
             {
                 app.set_activation_policy(tauri::ActivationPolicy::Accessory);
@@ -104,11 +120,11 @@ pub fn main() {
                 .decorations(true)
                 .visible(false);
 
-                let window: tauri::WebviewWindow = win_builder.build().unwrap();
+            let window: tauri::WebviewWindow = win_builder.build().unwrap();
 
             #[cfg(target_os = "macos")]
             window.set_transparent_titlebar(true, true);
-            
+
             window.set_always_on_top(true).unwrap();
 
             #[cfg(debug_assertions)]

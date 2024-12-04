@@ -1,4 +1,5 @@
 import type { GithubSettings, Review, SettingsState } from '../../types';
+import { disable, enable } from '@tauri-apps/plugin-autostart';
 import { getOrganizations, getReviews } from '../api';
 import { invoke } from '@tauri-apps/api/core';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification';
@@ -13,21 +14,15 @@ const inititalReviews = {
 
 type Reviews = typeof inititalReviews;
 
+const initialState = loadState();
+
 export function createGithubStore() {
   const { account } = getAuthContext();
-  let settings = $state<SettingsState>(defaultSettings);
-  let githubSettings = $state<GithubSettings>(defaultGithubSettings);
+  let settings = $state<SettingsState>(initialState.settings ?? defaultSettings);
+  let githubSettings = $state<GithubSettings>(initialState.githubSettings ?? defaultGithubSettings);
   let reviews = $state(inititalReviews);
   let loading = $state(false);
   let availableOrgs = $state<{ value: string; label: string }[]>([]);
-
-  const prevState = loadState();
-  if (prevState.settings) {
-    settings = prevState.settings;
-  }
-  if (prevState.githubSettings) {
-    githubSettings = prevState.githubSettings;
-  }
 
   async function notification(text: string) {
     let permissionGranted = await isPermissionGranted();
@@ -85,6 +80,8 @@ export function createGithubStore() {
   });
 
   function updateGithubSettings() {
+    const toggle = settings.openAtStartup ? enable : disable;
+    toggle();
     saveState(account, settings, githubSettings);
   }
 

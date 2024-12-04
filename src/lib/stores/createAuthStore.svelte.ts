@@ -1,14 +1,10 @@
 import type { AuthTokenOptions, AuthState } from '../../types';
 import { getUserData } from '../api';
-// import { disable, enable } from '../auto-start';
 import { clearState, loadState, saveState } from '../storage';
-// import { createURL } from '../url';
-
-// const GITHUB_AUTHORIZE_ENDPOINT = 'https://github.com/login/oauth/authorize';
-// const GITHUB_AUTH_SCOPES = ['repo', 'read:user'];
 
 export function createAuthStore() {
   let account = $state<AuthState | undefined>(undefined);
+  const isAuthenticated = $derived(!!account?.user);
 
   // Initialize from previous state
   const prevState = loadState();
@@ -19,13 +15,13 @@ export function createAuthStore() {
   async function signIn({ token, hostname = 'github.com' }: AuthTokenOptions): Promise<void> {
     const user = await getUserData(token, hostname);
     if (user) {
-      const updatedAccount: AuthState = {
+      const acc: AuthState = {
         token,
         hostname,
         user,
       };
-      account = updatedAccount;
-      saveState(updatedAccount);
+      account = acc;
+      saveState(acc);
     }
   }
 
@@ -33,8 +29,6 @@ export function createAuthStore() {
     account = undefined;
     clearState();
   }
-
-  const isAuthenticated = $derived(!!account?.user);
 
   return {
     get account() {

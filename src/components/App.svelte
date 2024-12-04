@@ -11,7 +11,6 @@
   onMount(() => {
     githubStore.fetchInitialReviews();
   });
-
   setGithubContext(githubStore);
 </script>
 

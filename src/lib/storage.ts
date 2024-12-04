@@ -1,6 +1,6 @@
 import type { AuthState, GithubSettings, SettingsState } from '../types';
 import { invoke } from '@tauri-apps/api/core';
-import { disable } from './auto-start';
+import { disable } from '@tauri-apps/plugin-autostart';
 import { defaultGithubSettings, defaultSettings } from './stores/constants';
 
 export const loadState = (): {

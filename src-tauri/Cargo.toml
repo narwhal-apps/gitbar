@@ -39,6 +39,9 @@ objc = "0.2.7"
 tauri-plugin-autostart = "2"
 tauri-plugin-updater = "2"
 
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-autostart = "2"
+
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
