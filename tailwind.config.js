@@ -14,6 +14,9 @@ const config = {
       },
     },
     extend: {
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+      },
       colors: {
         github: {
           dark: '#0d1117',
@@ -23,13 +26,13 @@ const config = {
           text: {
             primary: '#c9d1d9',
             secondary: '#8b949e',
-            muted: '#6e7681'
+            muted: '#6e7681',
           },
           status: {
             success: '#238636',
             pending: '#eb9f09',
-            failure: '#f85149'
-          }
+            failure: '#f85149',
+          },
         },
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',

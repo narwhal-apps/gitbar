@@ -1,18 +1,18 @@
 <script lang="ts">
+  import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '$lib/components/ui/tooltip';
   import type { GitHubPR } from './types';
   import StatusBadge from './StatusBadge.svelte';
   import RepoIcon from './RepoIcon.svelte';
   import PRIcon from './PRIcon.svelte';
   import { getContrastYIQ, hexToRGBA, getPRState, getStatusType, formatDate } from './utils';
   import { getGithubContext, getThemeContext } from '$lib/stores/contexts';
+  import { cn } from '$lib/utils';
 
-  let { pr }: { pr: GitHubPR } = $props();
+  let { pr, index }: { pr: GitHubPR; index: number } = $props();
 
   const themeCtx = getThemeContext();
 
   const ghCtx = getGithubContext();
-
-  let isHovered = $state(false);
 
   const prState = getPRState(pr);
   const status = getStatusType(pr);
@@ -20,11 +20,11 @@
 </script>
 
 <div
+  role="menuitem"
+  tabindex={index + 1}
   data-compact={ghCtx.settings.isCompactMode}
-  class="group flex flex-col gap-2 border bg-background px-3 py-2 transition-all duration-200 hover:bg-foreground/5 data-[compact=true]:gap-0"
+  class="group flex flex-col gap-2 border bg-background px-3 py-2 outline-0 -outline-offset-2 transition-all duration-200 hover:bg-foreground/5 data-[compact=true]:gap-0"
   class:opacity-60={pr.node.closed && !pr.node.merged}
-  onmouseenter={() => (isHovered = true)}
-  onmouseleave={() => (isHovered = false)}
 >
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-2 text-sm text-secondary-foreground group-data-[compact=true]:text-xs">
@@ -33,7 +33,17 @@
       <span class="text-github-text-muted">#{pr.node.number}</span>
     </div>
     {#if pr.node.isReadByViewer}
-      <div class="mr-[6px] h-2 w-2 animate-pulse rounded-full bg-blue-500"></div>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger>
+            <div class="mr-[6px] h-2 w-2 animate-pulse cursor-default rounded-full bg-blue-500"></div>
+          </TooltipTrigger>
+          <TooltipContent
+            class={cn('border border-blue-500/25', ghCtx.settings.isCompactMode && 'px-1 py-0 text-[12px]')}
+            >Unread</TooltipContent
+          >
+        </Tooltip>
+      </TooltipProvider>
     {/if}
   </div>
 
@@ -56,7 +66,7 @@
       class="flex flex-row items-center gap-4 text-sm group-data-[compact=true]:gap-2 group-data-[compact=true]:text-xs"
     >
       <span class="flex items-center gap-1 font-medium text-github-text-secondary">
-        {#if pr.node.author.__typename === 'Bot'}
+        {#if pr.node.author.login === 'dependabot'}
           <img
             class="avatar"
             src="https://avatars.githubusercontent.com/in/29110?s=40&amp;v=4"

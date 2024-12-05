@@ -60,7 +60,8 @@
         type="single"
         bind:value={ghCtx.githubSettings.type}
         items={typeOptions}
-        onValueChange={v => (ghCtx.githubSettings.type = v)}
+        onValueChange={(value: string) =>
+          (ghCtx.githubSettings.type = value as 'review-requested' | 'author' | 'mentions' | 'assignee')}
       >
         <Select.Trigger>
           {getTriggerContent(ghCtx.githubSettings.type)}
@@ -75,7 +76,7 @@
         bind:value={ghCtx.githubSettings.state}
         items={stateOptions}
         type="single"
-        onValueChange={v => (ghCtx.githubSettings.state = v)}
+        onValueChange={(value: string) => (ghCtx.githubSettings.state = value as 'open' | 'closed' | 'all')}
       >
         <Select.Trigger>
           {getTriggerContent(ghCtx.githubSettings.state)}

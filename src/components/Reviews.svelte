@@ -23,9 +23,9 @@
 {:else if ghCtx.reviews.count === 0}
   <Empty />
 {:else}
-  <ul id="reviews">
-    {#each ghCtx.reviews.data as pr}
-      <Card {pr} />
+  <ul id="reviews" role="menu">
+    {#each ghCtx.reviews.data as pr, index}
+      <Card {pr} {index} />
     {/each}
   </ul>
 {/if}

@@ -43,11 +43,12 @@
   }
 
   function validateField(field: string, value: string) {
-    form[field]?.validators &&
+    if (form[field]?.validators) {
       form[field].validators.forEach(fn => {
         const error = fn(value);
         errors[field] = { ...errors[field], ...error };
       });
+    }
   }
 
   function onChange(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
@@ -58,6 +59,7 @@
     const formData = new FormData(e.currentTarget);
 
     const data: any = {};
+
     for (let field of formData) {
       const [key, value] = field;
       data[key] = value;

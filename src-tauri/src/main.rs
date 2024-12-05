@@ -130,7 +130,7 @@ pub fn main() {
             #[cfg(debug_assertions)]
             window.open_devtools();
 
-            system_tray::setup(app);
+            let _ = system_tray::setup(app);
 
             Ok(())
         })

@@ -1,4 +1,4 @@
-import type { GithubSettings, Review, SettingsState } from '../../types';
+import type { GithubSettings, Review, SettingsState } from '../../types.ts';
 import { disable, enable } from '@tauri-apps/plugin-autostart';
 import { getOrganizations, getReviews } from '../api';
 import { invoke } from '@tauri-apps/api/core';

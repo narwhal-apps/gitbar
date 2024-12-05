@@ -1,4 +1,4 @@
-import type { AuthTokenOptions, AuthState } from '../../types';
+import type { AuthState, AuthTokenOptions } from '../../types.ts';
 import { getUserData } from '../api';
 import { clearState, loadState, saveState } from '../storage';
 

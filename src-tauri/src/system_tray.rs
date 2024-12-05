@@ -9,7 +9,7 @@ use tauri_plugin_positioner::{Position, WindowExt};
 pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     let menu = MenuBuilder::new(app).text("quit", "Quit").build()?;
 
-    app.handle().plugin(tauri_plugin_positioner::init());
+    let _ = app.handle().plugin(tauri_plugin_positioner::init());
     let _ = TrayIconBuilder::with_id("gitbar-tray")
         .menu(&menu)
         .menu_on_left_click(false)
@@ -29,7 +29,7 @@ pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
                     button_state: MouseButtonState::Up,
                     ..
                 } => {
-                    println!("left click pressed and released");
+                    // println!("left click pressed and released");
 
                     let visible = window.is_visible().unwrap();
 
