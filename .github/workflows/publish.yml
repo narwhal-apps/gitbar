@@ -6,7 +6,7 @@ on:
 
 env:
   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
   VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
   VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
   CI: true
@@ -65,7 +65,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
           CI: true
