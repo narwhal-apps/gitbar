@@ -111,15 +111,21 @@ pub fn main() {
             }
 
             let app_handle = app.app_handle().clone();
-            let win_builder = WebviewWindowBuilder::new(&app_handle, "main", WebviewUrl::default())
-                .inner_size(500.0, 400.0)
-                .skip_taskbar(true)
-                .fullscreen(false)
-                .resizable(false)
-                .title("Gitbar")
-                .title_bar_style(TitleBarStyle::Overlay)
-                .decorations(true)
-                .visible(false);
+            let mut win_builder =
+                WebviewWindowBuilder::new(&app_handle, "main", WebviewUrl::default())
+                    .inner_size(500.0, 400.0)
+                    .skip_taskbar(true)
+                    .fullscreen(false)
+                    .resizable(false)
+                    .title("Gitbar")
+                    .visible(false);
+
+            #[cfg(target_os = "macos")]
+            {
+                win_builder = win_builder
+                    .title_bar_style(TitleBarStyle::Overlay)
+                    .decorations(true);
+            }
 
             let window: tauri::WebviewWindow = win_builder.build().unwrap();
 
