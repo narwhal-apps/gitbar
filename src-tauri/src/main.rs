@@ -89,19 +89,20 @@ pub fn main() {
 
                 let _ = app.handle().plugin(tauri_plugin_autostart::init(
                     MacosLauncher::LaunchAgent,
-                    Some(vec!["--flag1", "--flag2"]),
+                    Some(vec![]),
                 ));
 
                 let autostart_manager = app.autolaunch();
-                // Enable autostart
-                let _ = autostart_manager.enable();
-                // Check enable state
+
+                if autostart_manager.is_enabled().unwrap() {
+                    let _ = autostart_manager.enable();
+                } else {
+                    let _ = autostart_manager.disable();
+                }
                 println!(
-                    "registered for autostart? {}",
+                    "Autostart enabled: {}",
                     autostart_manager.is_enabled().unwrap()
                 );
-                // Disable autostart
-                let _ = autostart_manager.disable();
             }
 
             #[cfg(target_os = "macos")]
