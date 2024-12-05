@@ -36,7 +36,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: v22.11.0
           cache: 'pnpm' # Set this to npm, yarn or pnpm.
 
       - name: install Rust stable
