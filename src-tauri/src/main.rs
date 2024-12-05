@@ -3,7 +3,7 @@
     windows_subsystem = "windows"
 )]
 
-use tauri::{Manager, Runtime, TitleBarStyle, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
+use tauri::{Manager, Runtime, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
 mod commands;
 mod server;
@@ -123,7 +123,7 @@ pub fn main() {
             #[cfg(target_os = "macos")]
             {
                 win_builder = win_builder
-                    .title_bar_style(TitleBarStyle::Overlay)
+                    .title_bar_style(tauri::TitleBarStyle::Overlay)
                     .decorations(true);
             }
 
