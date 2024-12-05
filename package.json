@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri:dev": "tauri dev",
+    "tauri:dev": "RUST_BACKTRACE=1 tauri dev",
     "tauri:build": "tauri build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "bump": "sh ./bump.sh",
@@ -15,7 +15,12 @@
     "lint": "eslint --config ./eslint.config.js ./src"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.6.0",
+    "@tauri-apps/api": "^2.0.3",
+    "@tauri-apps/plugin-autostart": "~2",
+    "@tauri-apps/plugin-http": "~2",
+    "@tauri-apps/plugin-notification": "~2",
+    "@tauri-apps/plugin-shell": "~2",
+    "@tauri-apps/plugin-updater": "~2",
     "bits-ui": "1.0.0-next.45",
     "clsx": "2.1.1",
     "svelte": "^5.1.12",
@@ -23,14 +28,14 @@
     "tailwind-variants": "0.2.1"
   },
   "engines": {
-    "node": "v22.9.0"
+    "node": "v22.11.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
     "@sveltejs/adapter-static": "^3.0.6",
     "@sveltejs/kit": "^2.8.0",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
-    "@tauri-apps/cli": "^1.6.3",
+    "@tauri-apps/cli": "^2.0.4",
     "@tsconfig/svelte": "5.0.4",
     "@types/node": "22.9.0",
     "@typescript-eslint/parser": "^8.13.0",

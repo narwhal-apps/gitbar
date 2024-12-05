@@ -1,17 +1,18 @@
 <script lang="ts">
-  import { open } from '@tauri-apps/api/shell';
+  import { open } from '@tauri-apps/plugin-shell';
   import { Validators, type ValidatorFn, type ValidatorResult } from '../lib/validators';
-  import { auth, createAuthURL, defaultGithubSettings, defaultSettings } from '../lib/auth';
   import { onDestroy, onMount } from 'svelte';
   import { getServerPort } from '../lib/app';
-  import { invoke } from '@tauri-apps/api/tauri';
-  import { getAccessToken, getUserData } from '../lib/api';
+  import { invoke } from '@tauri-apps/api/core';
+  import { createAuthURL, getAccessToken } from '../lib/api';
   import { listen } from '@tauri-apps/api/event';
-  import { saveState } from '../lib/storage';
   import { Button } from '$lib/components/ui/button';
   import { cn } from '$lib/utils';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
+  import { getAuthContext } from '$lib/stores/contexts';
+
+  let ghCtx = getAuthContext();
 
   const defaultHost = 'github.com';
   let errors: { [inputName: string]: ValidatorResult } = $state({});
@@ -37,16 +38,18 @@
     return !Object.values(errors).some(field => Object.values(field).some(errorObject => errorObject.error));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function validateForm(data: { [inputName: string]: any }): void {
     Object.keys(data).forEach(field => validateField(field, data[field]));
   }
 
   function validateField(field: string, value: string) {
-    form[field]?.validators &&
+    if (form[field]?.validators) {
       form[field].validators.forEach(fn => {
         const error = fn(value);
         errors[field] = { ...errors[field], ...error };
       });
+    }
   }
 
   function onChange(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
@@ -56,7 +59,9 @@
   function onSubmit(e: SubmitEvent & { currentTarget: HTMLFormElement }) {
     const formData = new FormData(e.currentTarget);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = {};
+
     for (let field of formData) {
       const [key, value] = field;
       data[key] = value;
@@ -66,7 +71,7 @@
 
     if (isFormValid()) {
       loading = true;
-      $auth.signIn(data).finally(() => (loading = false));
+      ghCtx.signIn(data).finally(() => (loading = false));
     } else {
       console.log('Invalid Form');
     }
@@ -77,38 +82,29 @@
   }
 
   onMount(async () => {
-    await invoke('start_server');
-    port = await getServerPort();
-    unlistenFn = await listen('code', async (event: { payload: string }) => {
-      processing = true;
-      try {
-        const {
-          data: { access_token },
-        } = await getAccessToken({
-          clientId: import.meta.env.VITE_CLIENT_ID,
-          clientSecret: import.meta.env.VITE_CLIENT_SECRET,
-          code: event.payload,
-          hostname: defaultHost,
-        });
-
-        const user = await getUserData(access_token, defaultHost);
-        if (user) {
-          const account = {
-            token: access_token,
+    if (!ghCtx.isAuthenticated) {
+      await invoke('start_server');
+      port = await getServerPort();
+      unlistenFn = await listen('code', async (event: { payload: string }) => {
+        processing = true;
+        try {
+          const token = await getAccessToken({
+            clientId: import.meta.env.VITE_CLIENT_ID,
+            clientSecret: import.meta.env.VITE_CLIENT_SECRET,
+            code: event.payload,
             hostname: defaultHost,
-            user,
-          };
-          auth.update(prevAuth => ({
-            ...prevAuth,
-            account,
-          }));
-          saveState(account, defaultSettings, defaultGithubSettings);
+          });
+
+          ghCtx.signIn({ token });
+
+          await invoke('stop_server');
+        } catch (error) {
+          console.error('Error:', error);
+        } finally {
+          processing = false;
         }
-        await invoke('stop_server');
-      } finally {
-        processing = false;
-      }
-    });
+      });
+    }
   });
 
   onDestroy(() => {

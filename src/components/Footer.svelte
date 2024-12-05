@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { open } from '@tauri-apps/api/shell';
-  import { auth } from '../lib/auth';
-  import { github } from '../lib/github';
+  import { open } from '@tauri-apps/plugin-shell';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as Avatar from '$lib/components/ui/avatar';
   import Settings from './Settings.svelte';
   import Filters from './Filters.svelte';
+  import { getAuthContext, getGithubContext } from '$lib/stores/contexts';
+
+  const authCtx = getAuthContext();
+  const ghCtx = getGithubContext();
 
   let fetching = $state(false);
   let settingsVisible = $state(false);
@@ -13,8 +15,8 @@
 
   const startFetch = () => {
     fetching = true;
-    if ($auth.account) {
-      $github.fetchReviews($auth.account, $auth.githubSettings).finally(() => {
+    if (authCtx.account) {
+      ghCtx.fetchReviews().finally(() => {
         fetching = false;
       });
     }
@@ -33,25 +35,25 @@
   <div class="flex justify-between">
     <div class="flex items-center p-2">
       <Avatar.Root class="h-6 w-6 flex-shrink-0">
-        <Avatar.Image src={$auth.account?.user?.avatar_url} alt={$auth.account?.user?.name || ''} />
+        <Avatar.Image src={authCtx.account?.user?.avatar_url} alt={authCtx.account?.user?.name || ''} />
         <Avatar.Fallback class="border border-muted text-xs font-medium uppercase text-muted-foreground"
-          >{avatarFallback($auth.account?.user?.name)}</Avatar.Fallback
+          >{avatarFallback(authCtx.account?.user?.name)}</Avatar.Fallback
         >
       </Avatar.Root>
       <button
         class={`${
-          $auth.account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
+          authCtx.account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
         } ml-1 block truncate`}
-        onclick={() => ($auth.account?.user?.html_url ? open($auth.account?.user?.html_url) : null)}
-        >{$auth.account?.user?.name || $auth.account?.user?.email || ''}</button
+        onclick={() => (authCtx.account?.user?.html_url ? open(authCtx.account?.user?.html_url) : null)}
+        >{authCtx.account?.user?.name || authCtx.account?.user?.email || ''}</button
       >
     </div>
     <div class="flex justify-between">
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={startFetch}
         title="Fetch"
+        aria-label="Fetch reviews"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -66,11 +68,11 @@
           ></path></svg
         >
       </button>
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={() => (filterVisible = true)}
         title="Filter"
+        aria-label="Open filters"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -87,11 +89,11 @@
           ></path></svg
         >
       </button>
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
         onclick={() => (settingsVisible = true)}
         title="Settings"
+        aria-label="Open settings"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -106,11 +108,11 @@
           ></path></svg
         >
       </button>
-      <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
-        onclick={$auth.signOut}
+        onclick={authCtx.signOut}
         title="Sign Out"
+        aria-label="Sign out of application"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -130,6 +132,7 @@
 </footer>
 
 <Dialog.Root bind:open={settingsVisible}>
+  <Dialog.Overlay class="fixed inset-0 bg-transparent backdrop-blur-sm" />
   <Dialog.Content class="w-11/12 rounded-md">
     <Dialog.Header class="text-left">
       <Dialog.Title>Settings</Dialog.Title>
@@ -138,6 +141,7 @@
   </Dialog.Content>
 </Dialog.Root>
 <Dialog.Root bind:open={filterVisible}>
+  <Dialog.Overlay class="fixed inset-0 bg-transparent backdrop-blur-sm" />
   <Dialog.Content class="w-11/12 rounded-md">
     <Dialog.Header class="text-left">
       <Dialog.Title>Filter</Dialog.Title>

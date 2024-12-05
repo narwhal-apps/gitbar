@@ -14,7 +14,26 @@ const config = {
       },
     },
     extend: {
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+      },
       colors: {
+        github: {
+          dark: '#0d1117',
+          card: '#1c1c1c',
+          border: '#333333',
+          'border-hover': '#484848',
+          text: {
+            primary: '#c9d1d9',
+            secondary: '#8b949e',
+            muted: '#6e7681',
+          },
+          status: {
+            success: '#238636',
+            pending: '#eb9f09',
+            failure: '#f85149',
+          },
+        },
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',
         ring: 'hsl(var(--ring) / <alpha-value>)',

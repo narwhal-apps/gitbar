@@ -1,35 +1,29 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { getVersion, getName } from '@tauri-apps/api/app';
-  import { auth, defaultSettings } from '../lib/auth';
   import { Slider } from '$lib/components/ui/slider/index.js';
   import Theme from './Theme.svelte';
-  import { isEnabled } from '../lib/auto-start';
+  import { isEnabled } from '@tauri-apps/plugin-autostart';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
   import { Switch } from '$lib/components/ui/switch';
   import { Label } from '$lib/components/ui/label';
+  import { getGithubContext } from '$lib/stores/contexts';
 
   interface Props {
     modalVisible: boolean;
   }
 
   let { modalVisible = $bindable() }: Props = $props();
-  let openAtStartup = $state($auth.settings?.openAtStartup);
-  let isCompactMode = $state($auth.settings?.isCompactMode);
-  let fetchInterval = $state(($auth.settings.fetchInterval || defaultSettings.fetchInterval) / 1000);
+
+  let ghCtx = getGithubContext();
+
+  $inspect(ghCtx.settings);
+
   let app = $state({ name: '', version: '' });
 
-  const changeCompactMode = (checked: boolean) => {
-    isCompactMode = checked;
-  };
-
   const onSave = () => {
-    $auth.updateSettings({
-      openAtStartup,
-      isCompactMode,
-      fetchInterval: fetchInterval * 1000,
-    });
+    ghCtx.updateGithubSettings();
     modalVisible = false;
   };
   onMount(() => {
@@ -40,7 +34,8 @@
     // Not sure why invoke('plugin:autostart|is_enabled') returns false when local storage is set to true
     // Application priviliges in dev perhaps?
     isEnabled().then(active => {
-      openAtStartup = active;
+      console.log('active :', active);
+      ghCtx.settings.openAtStartup = active;
     });
   });
 </script>
@@ -53,22 +48,33 @@
       <Switch
         id="open_at_start"
         name="open_at_start"
-        checked={openAtStartup}
-        onCheckedChange={c => (openAtStartup = c)}
+        checked={ghCtx.settings.openAtStartup}
+        onCheckedChange={v => (ghCtx.settings.openAtStartup = v)}
       />
       <Label for="open_at_start">Auto start Gitbar</Label>
     </div>
     <div class="flex items-center space-x-2">
-      <Switch id="compact_mode" name="compact_mode" checked={isCompactMode} onCheckedChange={changeCompactMode} />
+      <Switch
+        id="compact_mode"
+        name="compact_mode"
+        checked={ghCtx.settings.isCompactMode}
+        onCheckedChange={v => (ghCtx.settings.isCompactMode = v)}
+      />
       <Label for="compact_mode">Compact mode</Label>
     </div>
     <!-- <Toggle name="compact_mode" checked={isCompactMode} label="Compact mode" on:change={changeCompactMode} /> -->
   </div>
   <div class="rounded-lg border p-4">
     <label for="fetch_interval" class="mb-4 block text-sm font-bold text-gray-700 dark:text-gray-100">
-      Fetch interval <strong>{fetchInterval} sec</strong>
+      Fetch interval <strong>{ghCtx.settings.fetchInterval} sec</strong>
     </label>
-    <Slider onValueChange={v => (fetchInterval = v[0])} value={[fetchInterval]} min={5} max={60} id="fetch_interval" />
+    <Slider
+      onValueChange={v => (ghCtx.settings.fetchInterval = v[0])}
+      value={[ghCtx.settings.fetchInterval]}
+      min={5}
+      max={60}
+      id="fetch_interval"
+    />
   </div>
   <div class="relative mt-4 flex items-center justify-between">
     <Badge variant="outline" class="opacity-40">{app.name}@{app.version}</Badge>
