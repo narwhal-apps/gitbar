@@ -38,6 +38,7 @@
     return !Object.values(errors).some(field => Object.values(field).some(errorObject => errorObject.error));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function validateForm(data: { [inputName: string]: any }): void {
     Object.keys(data).forEach(field => validateField(field, data[field]));
   }
@@ -58,6 +59,7 @@
   function onSubmit(e: SubmitEvent & { currentTarget: HTMLFormElement }) {
     const formData = new FormData(e.currentTarget);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = {};
 
     for (let field of formData) {
