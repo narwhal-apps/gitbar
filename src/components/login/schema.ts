@@ -15,6 +15,7 @@ export const loginSchema = z.object({
     .max(255) // Maximum length for a hostname
     .regex(
       /^github\.(com|[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+)$/,
+      "Must be a valid hostname"
     )
 
 
