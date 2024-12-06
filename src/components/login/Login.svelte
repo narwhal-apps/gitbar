@@ -1,81 +1,41 @@
 <script lang="ts">
+  import * as Form from '$lib/components/ui/form/index.js';
+  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { type Infer, superForm, type ValidationErrors } from 'sveltekit-superforms';
+  import { loginSchema, type LoginSchema } from './schema';
   import { open } from '@tauri-apps/plugin-shell';
-  import { Validators, type ValidatorFn, type ValidatorResult } from '../lib/validators';
   import { onDestroy, onMount } from 'svelte';
-  import { getServerPort } from '../lib/app';
+  import { getServerPort } from '$lib/app';
   import { invoke } from '@tauri-apps/api/core';
-  import { createAuthURL, getAccessToken } from '../lib/api';
+  import { createAuthURL, getAccessToken } from '$lib/api';
   import { listen } from '@tauri-apps/api/event';
   import { Button } from '$lib/components/ui/button';
   import { cn } from '$lib/utils';
   import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
   import { getAuthContext } from '$lib/stores/contexts';
 
   let ghCtx = getAuthContext();
 
   const defaultHost = 'github.com';
-  let errors: { [inputName: string]: ValidatorResult } = $state({});
+
+  const form = superForm(
+    {
+      token: '',
+      hostname: defaultHost,
+    },
+    {
+      validators: zodClient(loginSchema),
+    }
+  );
+
+  let fieldErrors: ValidationErrors<Infer<LoginSchema>> = $state({});
+
+  $inspect({ fieldErrors });
+
   let loading = $state(false);
   let processing = $state(false);
   let port: number;
   let unlistenFn: () => void;
-
-  let form: {
-    [inputName: string]: {
-      validators: ValidatorFn[];
-    };
-  } = {
-    token: {
-      validators: [Validators.required],
-    },
-    hostname: {
-      validators: [Validators.required],
-    },
-  };
-
-  function isFormValid(): boolean {
-    return !Object.values(errors).some(field => Object.values(field).some(errorObject => errorObject.error));
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function validateForm(data: { [inputName: string]: any }): void {
-    Object.keys(data).forEach(field => validateField(field, data[field]));
-  }
-
-  function validateField(field: string, value: string) {
-    if (form[field]?.validators) {
-      form[field].validators.forEach(fn => {
-        const error = fn(value);
-        errors[field] = { ...errors[field], ...error };
-      });
-    }
-  }
-
-  function onChange(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
-    validateField(e.currentTarget.name, e.currentTarget.value);
-  }
-
-  function onSubmit(e: SubmitEvent & { currentTarget: HTMLFormElement }) {
-    const formData = new FormData(e.currentTarget);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = {};
-
-    for (let field of formData) {
-      const [key, value] = field;
-      data[key] = value;
-    }
-
-    validateForm(data);
-
-    if (isFormValid()) {
-      loading = true;
-      ghCtx.signIn(data).finally(() => (loading = false));
-    } else {
-      console.log('Invalid Form');
-    }
-  }
 
   function handleToken() {
     open(createAuthURL(port));
@@ -110,24 +70,46 @@
   onDestroy(() => {
     unlistenFn();
   });
+
+  const { form: formData } = form;
+
+  const handleSubmit = async (e: SubmitEvent) => {
+    e.preventDefault();
+    const { errors, valid } = await form.validateForm();
+
+    if (valid) {
+      loading = true;
+      try {
+        await ghCtx.signIn(form.capture().data);
+      } finally {
+        loading = false;
+      }
+    } else {
+      fieldErrors = errors;
+    }
+  };
 </script>
 
 <div class="m-8">
-  <form onsubmit={onSubmit}>
-    <div class="pb-2">
-      <Label for="token">Token</Label>
-      <Input
-        type="text"
-        name="token"
-        id="token"
-        onchange={onChange}
-        placeholder="The 40 characters token generated on GitHub"
-        class="w-full"
-      />
-      {#if errors?.token?.required?.error}
-        <p class="text-sm text-red-400 dark:text-red-300">Token is required</p>
-      {/if}
-      <span class="text-sm">
+  <form onsubmit={handleSubmit}>
+    <Form.Field {form} name="token">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="m-0 flex flex-row justify-between">
+            <Form.Label class={cn(fieldErrors.token?.length && 'text-destructive')}>Token</Form.Label>
+            {#if fieldErrors.token}
+              <Form.Label class="text-destructive">{fieldErrors.token.at(-1)}</Form.Label>
+            {/if}
+          </div>
+          <Input
+            {...props}
+            class={cn(fieldErrors.token?.length && 'border-destructive')}
+            placeholder="The 40 characters token generated on GitHub"
+            bind:value={$formData.token}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.Description class="pb-1">
         To generate a token, go to GitHub,
         <button
           class="cursor-pointer underline hover:text-gray-500 dark:hover:text-gray-300"
@@ -137,27 +119,31 @@
             )}
         >
           personal access tokens
-        </button>
-      </span>
-    </div>
-    <div class="pb-2">
-      <Label for="hostname">Hostname</Label>
-      <Input
-        type="text"
-        name="hostname"
-        placeholder="github.company.com"
-        id="hostname"
-        value={defaultHost}
-        onchange={onChange}
-        class="w-full"
-      />
-      {#if errors?.hostname?.required?.error}
-        <p class="text-red-400 dark:text-red-300">Password is required</p>
-      {/if}
-      <span class="text-sm">
+        </button></Form.Description
+      >
+
+      <Form.Control>
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="m-0 flex flex-row justify-between">
+              <Form.Label class={cn(fieldErrors.hostname?.length && 'text-destructive')}>Hostname</Form.Label>
+              {#if fieldErrors.hostname}
+                <Form.Label class="text-destructive">{fieldErrors.hostname.at(-1)}</Form.Label>
+              {/if}
+            </div>
+            <Input
+              {...props}
+              placeholder="github.company.com"
+              bind:value={$formData.hostname}
+              class={cn(fieldErrors.hostname?.length && 'border-destructive')}
+            />
+          {/snippet}
+        </Form.Control>
+      </Form.Control>
+      <Form.Description class="pb-1">
         Defaults to {defaultHost}. Change only if you are using GitHub for Enterprise.
-      </span>
-    </div>
+      </Form.Description>
+    </Form.Field>
     <div class="flex flex-col items-center gap-1">
       <Button
         variant="default"

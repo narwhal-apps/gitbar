@@ -49,7 +49,7 @@
 
   <div class="flex items-center gap-2">
     <PRIcon state={prState} />
-    <h3 class="flex items-center truncate font-semibold">
+    <h3 class="truncate font-semibold">
       <a
         href={pr.node.url}
         target="_blank"
