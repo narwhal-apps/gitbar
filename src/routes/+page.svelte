@@ -1,12 +1,10 @@
 <script>
-  import { getAuthContext } from '$lib/stores/contexts';
   import App from '../components/App.svelte';
   import Login from '../components/login/Login.svelte';
-
-  let authCtx = getAuthContext();
+  import { appState } from '$lib/stores/state.svelte';
 </script>
 
-{#if authCtx.isAuthenticated}
+{#if appState.isAuthenticated}
   <App />
 {:else}
   <Login />

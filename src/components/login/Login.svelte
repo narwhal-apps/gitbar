@@ -10,10 +10,8 @@
   import { Button } from '$lib/components/ui/button';
   import { cn } from '$lib/utils';
   import { Input } from '$lib/components/ui/input';
-  import { getAuthContext } from '$lib/stores/contexts';
   import Label from '$lib/components/ui/label/label.svelte';
-
-  let ghCtx = getAuthContext();
+  import { appState } from '$lib/stores/state.svelte';
 
   const defaultHost = 'github.com';
 
@@ -32,7 +30,7 @@
   }
 
   onMount(async () => {
-    if (!ghCtx.isAuthenticated) {
+    if (!appState.isAuthenticated) {
       await invoke('start_server');
       port = await getServerPort();
       unlistenFn = await listen('code', async (event: { payload: string }) => {
@@ -45,7 +43,7 @@
             hostname: defaultHost,
           });
 
-          ghCtx.signIn({ token });
+          appState.signIn({ token });
 
           await invoke('stop_server');
         } catch (error) {
@@ -69,7 +67,7 @@
     if (success) {
       loading = true;
       try {
-        await ghCtx.signIn(formData);
+        await appState.signIn(formData);
       } finally {
         loading = false;
       }

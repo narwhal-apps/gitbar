@@ -11,3 +11,5 @@ export const defaultGithubSettings: GithubSettings = {
   type: 'review-requested',
   state: 'open',
 } as const;
+
+export const AUTH_CONTEXT_KEY = Symbol('auth');
