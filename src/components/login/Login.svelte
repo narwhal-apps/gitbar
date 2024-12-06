@@ -118,29 +118,30 @@
           personal access tokens
         </button></Form.Description
       >
+    </Form.Field>
 
+    <Form.Field {form} name="hostname">
       <Form.Control>
-        <Form.Control>
-          {#snippet children({ props })}
-            <div class="m-0 flex flex-row justify-between">
-              <Form.Label class={cn(fieldErrors.hostname?.length && 'text-destructive')}>Hostname</Form.Label>
-              {#if fieldErrors.hostname}
-                <Form.Label class="text-destructive">{fieldErrors.hostname.at(-1)}</Form.Label>
-              {/if}
-            </div>
-            <Input
-              {...props}
-              placeholder="github.company.com"
-              bind:value={$formData.hostname}
-              class={cn(fieldErrors.hostname?.length && 'border-destructive')}
-            />
-          {/snippet}
-        </Form.Control>
+        {#snippet children({ props })}
+          <div class="m-0 flex flex-row justify-between">
+            <Form.Label class={cn(fieldErrors.hostname?.length && 'text-destructive')}>Hostname</Form.Label>
+            {#if fieldErrors.hostname}
+              <Form.Label class="text-destructive">{fieldErrors.hostname.at(-1)}</Form.Label>
+            {/if}
+          </div>
+          <Input
+            {...props}
+            placeholder="github.company.com"
+            bind:value={$formData.hostname}
+            class={cn(fieldErrors.hostname?.length && 'border-destructive')}
+          />
+        {/snippet}
       </Form.Control>
       <Form.Description class="pb-1">
         Defaults to {defaultHost}. Change only if you are using GitHub for Enterprise.
       </Form.Description>
     </Form.Field>
+
     <div class="flex flex-col items-center gap-1">
       <Button
         variant="default"
