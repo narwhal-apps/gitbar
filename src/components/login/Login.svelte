@@ -17,10 +17,6 @@
   let ghCtx = getAuthContext();
 
   const defaultHost = 'github.com';
-  let loading = $state(false);
-  let processing = $state(false);
-  let port: number;
-  let unlistenFn: () => void;
 
   const form = superForm(
     {
@@ -33,6 +29,13 @@
   );
 
   let fieldErrors: ValidationErrors<Infer<LoginSchema>> = $state({});
+
+  $inspect({ fieldErrors });
+
+  let loading = $state(false);
+  let processing = $state(false);
+  let port: number;
+  let unlistenFn: () => void;
 
   function handleToken() {
     open(createAuthURL(port));
@@ -118,30 +121,29 @@
           personal access tokens
         </button></Form.Description
       >
-    </Form.Field>
 
-    <Form.Field {form} name="hostname">
       <Form.Control>
-        {#snippet children({ props })}
-          <div class="m-0 flex flex-row justify-between">
-            <Form.Label class={cn(fieldErrors.hostname?.length && 'text-destructive')}>Hostname</Form.Label>
-            {#if fieldErrors.hostname}
-              <Form.Label class="text-destructive">{fieldErrors.hostname.at(-1)}</Form.Label>
-            {/if}
-          </div>
-          <Input
-            {...props}
-            placeholder="github.company.com"
-            bind:value={$formData.hostname}
-            class={cn(fieldErrors.hostname?.length && 'border-destructive')}
-          />
-        {/snippet}
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="m-0 flex flex-row justify-between">
+              <Form.Label class={cn(fieldErrors.hostname?.length && 'text-destructive')}>Hostname</Form.Label>
+              {#if fieldErrors.hostname}
+                <Form.Label class="text-destructive">{fieldErrors.hostname.at(-1)}</Form.Label>
+              {/if}
+            </div>
+            <Input
+              {...props}
+              placeholder="github.company.com"
+              bind:value={$formData.hostname}
+              class={cn(fieldErrors.hostname?.length && 'border-destructive')}
+            />
+          {/snippet}
+        </Form.Control>
       </Form.Control>
       <Form.Description class="pb-1">
         Defaults to {defaultHost}. Change only if you are using GitHub for Enterprise.
       </Form.Description>
     </Form.Field>
-
     <div class="flex flex-col items-center gap-1">
       <Button
         variant="default"
