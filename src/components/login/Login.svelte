@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { loginSchema } from './schema';
+  import { loginSchema, type LoginSchema } from './schema';
+  import { safeParse, flatten } from 'valibot';
   import { open } from '@tauri-apps/plugin-shell';
   import { onDestroy, onMount } from 'svelte';
   import { getServerPort } from '$lib/app';
@@ -16,8 +17,10 @@
 
   const defaultHost = 'github.com';
 
-  let formData = $state({ token: '', hostname: defaultHost });
-  let fieldErrors = $state({ token: '', hostname: '' });
+  let token = $state('');
+  let hostname = $state(defaultHost);
+  const formData = $derived({ token, hostname });
+  let fieldErrors = $state<{ [x: string]: [string, ...string[]] } | undefined>(undefined);
   let loading = $state(false);
   let processing = $state(false);
 
@@ -59,18 +62,17 @@
   });
 
   const handleSubmit = async () => {
-    const result = loginSchema.safeParse(formData);
+    const { issues, success } = safeParse<LoginSchema>(loginSchema, formData);
 
-    if (result.success) {
+    fieldErrors = issues ? flatten<LoginSchema>(issues).nested : undefined;
+
+    if (success) {
       loading = true;
       try {
-        await ghCtx.signIn(result.data);
+        await ghCtx.signIn(formData);
       } finally {
         loading = false;
       }
-    } else {
-      const { token, hostname } = result.error.format();
-      fieldErrors = { token: token?._errors.at(0) ?? '', hostname: hostname?._errors.at(-1) ?? '' };
     }
   };
 </script>
@@ -78,14 +80,14 @@
 <div class="flex flex-col gap-2 p-8">
   <div class="flex h-4 flex-row items-center justify-between">
     <Label for="token">Token</Label>
-    {#if fieldErrors.token}
-      <p class="text-sm text-red-400 dark:text-red-300">{fieldErrors.token}</p>
+    {#if fieldErrors?.token}
+      <p class="text-sm text-red-400 dark:text-red-300">{fieldErrors.token.at(0)}</p>
     {/if}
   </div>
   <Input
-    class={cn(fieldErrors.token && 'border-red-300')}
+    bind:value={token}
+    class={cn(fieldErrors?.token && 'border-red-300')}
     placeholder="The 40 characters token generated on GitHub"
-    bind:value={formData.token}
   />
   <span class="text-sm">
     To generate a token, go to GitHub,
@@ -99,15 +101,11 @@
   </span>
   <div class="flex h-4 flex-row items-center justify-between">
     <Label for="hostname">Hostname</Label>
-    {#if fieldErrors.hostname}
-      <p class="text-sm text-red-400 dark:text-red-300">{fieldErrors.hostname}</p>
+    {#if fieldErrors?.hostname}
+      <p class="text-sm text-red-400 dark:text-red-300">{fieldErrors.hostname.at(-1)}</p>
     {/if}
   </div>
-  <Input
-    class={cn(fieldErrors.hostname && 'border-red-300')}
-    placeholder="github.company.com"
-    bind:value={formData.hostname}
-  />
+  <Input bind:value={hostname} class={cn(fieldErrors?.hostname && 'border-red-300')} placeholder="github.company.com" />
   <span class="text-sm">
     Defaults to {defaultHost}. Change only if you are using GitHub for Enterprise.
   </span>
