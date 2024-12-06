@@ -17,6 +17,10 @@
   let ghCtx = getAuthContext();
 
   const defaultHost = 'github.com';
+  let loading = $state(false);
+  let processing = $state(false);
+  let port: number;
+  let unlistenFn: () => void;
 
   const form = superForm(
     {
@@ -29,13 +33,6 @@
   );
 
   let fieldErrors: ValidationErrors<Infer<LoginSchema>> = $state({});
-
-  $inspect({ fieldErrors });
-
-  let loading = $state(false);
-  let processing = $state(false);
-  let port: number;
-  let unlistenFn: () => void;
 
   function handleToken() {
     open(createAuthURL(port));
