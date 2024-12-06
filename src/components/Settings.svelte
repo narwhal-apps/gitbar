@@ -18,8 +18,6 @@
 
   let ghCtx = getGithubContext();
 
-  $inspect(ghCtx.settings);
-
   let app = $state({ name: '', version: '' });
 
   const onSave = () => {
@@ -34,7 +32,6 @@
     // Not sure why invoke('plugin:autostart|is_enabled') returns false when local storage is set to true
     // Application priviliges in dev perhaps?
     isEnabled().then(active => {
-      console.log('active :', active);
       ghCtx.settings.openAtStartup = active;
     });
   });
