@@ -8,7 +8,7 @@
   import { Badge } from '$lib/components/ui/badge';
   import { Switch } from '$lib/components/ui/switch';
   import { Label } from '$lib/components/ui/label';
-  import { getGithubContext } from '$lib/stores/contexts';
+  import { appState } from '$lib/appState.svelte';
 
   interface Props {
     modalVisible: boolean;
@@ -16,12 +16,10 @@
 
   let { modalVisible = $bindable() }: Props = $props();
 
-  let ghCtx = getGithubContext();
-
   let app = $state({ name: '', version: '' });
 
   const onSave = () => {
-    ghCtx.updateGithubSettings();
+    appState.updateGithubSettings();
     modalVisible = false;
   };
   onMount(() => {
@@ -32,7 +30,7 @@
     // Not sure why invoke('plugin:autostart|is_enabled') returns false when local storage is set to true
     // Application priviliges in dev perhaps?
     isEnabled().then(active => {
-      ghCtx.settings.openAtStartup = active;
+      appState.settings.openAtStartup = active;
     });
   });
 </script>
@@ -45,8 +43,8 @@
       <Switch
         id="open_at_start"
         name="open_at_start"
-        checked={ghCtx.settings.openAtStartup}
-        onCheckedChange={v => (ghCtx.settings.openAtStartup = v)}
+        checked={appState.settings.openAtStartup}
+        onCheckedChange={v => (appState.settings.openAtStartup = v)}
       />
       <Label for="open_at_start">Auto start Gitbar</Label>
     </div>
@@ -54,8 +52,8 @@
       <Switch
         id="compact_mode"
         name="compact_mode"
-        checked={ghCtx.settings.isCompactMode}
-        onCheckedChange={v => (ghCtx.settings.isCompactMode = v)}
+        checked={appState.settings.isCompactMode}
+        onCheckedChange={v => (appState.settings.isCompactMode = v)}
       />
       <Label for="compact_mode">Compact mode</Label>
     </div>
@@ -63,11 +61,11 @@
   </div>
   <div class="rounded-lg border p-4">
     <label for="fetch_interval" class="mb-4 block text-sm font-bold text-gray-700 dark:text-gray-100">
-      Fetch interval <strong>{ghCtx.settings.fetchInterval} sec</strong>
+      Fetch interval <strong>{appState.settings.fetchInterval} sec</strong>
     </label>
     <Slider
-      onValueChange={v => (ghCtx.settings.fetchInterval = v[0])}
-      value={[ghCtx.settings.fetchInterval]}
+      onValueChange={v => (appState.settings.fetchInterval = v[0])}
+      value={[appState.settings.fetchInterval]}
       min={5}
       max={60}
       id="fetch_interval"

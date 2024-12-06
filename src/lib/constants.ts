@@ -1,4 +1,4 @@
-import type { GithubSettings, SettingsState } from '../../types.ts';
+import type { GithubSettings, SettingsState } from '../types.ts';
 
 export const defaultSettings: SettingsState = {
   openAtStartup: false,
@@ -11,5 +11,3 @@ export const defaultGithubSettings: GithubSettings = {
   type: 'review-requested',
   state: 'open',
 } as const;
-
-export const AUTH_CONTEXT_KEY = Symbol('auth');

@@ -1,11 +1,9 @@
 <script lang="ts">
   import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '$lib/components/ui/tooltip';
-  import { getGithubContext } from '$lib/stores/contexts';
+  import { appState } from '$lib/appState.svelte';
   import { cn } from '$lib/utils';
 
   let { status }: { status: 'success' | 'pending' | 'failure' } = $props();
-
-  const ghCtx = getGithubContext();
 
   const statusConfig = {
     success: {
@@ -34,7 +32,7 @@
       class={cn(
         'group flex h-5 w-5 cursor-default items-center justify-center rounded-full text-xs font-medium text-white',
         bg,
-        ghCtx.settings.isCompactMode && 'bg-transparent'
+        appState.settings.isCompactMode && 'bg-transparent'
       )}
     >
       {#if status === 'success'}
@@ -71,7 +69,7 @@
         </svg>
       {/if}
     </TooltipTrigger>
-    <TooltipContent class={cn('border', border, ghCtx.settings.isCompactMode && 'px-1 py-0 text-[12px]')}>
+    <TooltipContent class={cn('border', border, appState.settings.isCompactMode && 'px-1 py-0 text-[12px]')}>
       Checks {text}
     </TooltipContent>
   </Tooltip>

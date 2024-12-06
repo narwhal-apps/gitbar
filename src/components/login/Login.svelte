@@ -11,7 +11,7 @@
   import { cn } from '$lib/utils';
   import { Input } from '$lib/components/ui/input';
   import Label from '$lib/components/ui/label/label.svelte';
-  import { appState } from '$lib/stores/state.svelte';
+  import { appState } from '$lib/appState.svelte';
 
   const defaultHost = 'github.com';
 

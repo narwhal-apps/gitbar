@@ -1,15 +1,7 @@
 <script lang="ts">
   import '../app.css';
-  import { setAuthContext, setThemeContext } from '$lib/stores/contexts';
-  import { createAuthStore } from '$lib/stores/createAuthStore.svelte';
   import { onMount } from 'svelte';
-  import { createThemeStore } from '$lib/stores/createThemeStore.svelte';
-
-  const authStore = createAuthStore();
-  setAuthContext(authStore);
-
-  const themeStore = createThemeStore();
-  setThemeContext(themeStore);
+  import { appState } from '$lib/appState.svelte';
 
   let { children } = $props();
 
@@ -17,7 +9,7 @@
     // use the existence of the dark class on the html element for the initial value
     let isDark = document.documentElement.classList.contains('dark');
 
-    themeStore.theme = isDark ? 'dark' : 'light';
+    appState.theme = isDark ? 'dark' : 'light';
   });
 </script>
 
