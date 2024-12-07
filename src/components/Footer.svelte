@@ -4,10 +4,7 @@
   import * as Avatar from '$lib/components/ui/avatar';
   import Settings from './Settings.svelte';
   import Filters from './Filters.svelte';
-  import { getAuthContext, getGithubContext } from '$lib/stores/contexts';
-
-  const authCtx = getAuthContext();
-  const ghCtx = getGithubContext();
+  import { appState } from '$lib/appState.svelte';
 
   let fetching = $state(false);
   let settingsVisible = $state(false);
@@ -15,8 +12,8 @@
 
   const startFetch = () => {
     fetching = true;
-    if (authCtx.account) {
-      ghCtx.fetchReviews().finally(() => {
+    if (appState.auth) {
+      appState.fetchReviews().finally(() => {
         fetching = false;
       });
     }
@@ -35,17 +32,17 @@
   <div class="flex justify-between">
     <div class="flex items-center p-2">
       <Avatar.Root class="h-6 w-6 flex-shrink-0">
-        <Avatar.Image src={authCtx.account?.user?.avatar_url} alt={authCtx.account?.user?.name || ''} />
+        <Avatar.Image src={appState.auth?.user?.avatar_url} alt={appState.auth?.user?.name || ''} />
         <Avatar.Fallback class="border border-muted text-xs font-medium uppercase text-muted-foreground"
-          >{avatarFallback(authCtx.account?.user?.name)}</Avatar.Fallback
+          >{avatarFallback(appState.auth?.user?.name)}</Avatar.Fallback
         >
       </Avatar.Root>
       <button
         class={`${
-          authCtx.account?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
+          appState.auth?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
         } ml-1 block truncate`}
-        onclick={() => (authCtx.account?.user?.html_url ? open(authCtx.account?.user?.html_url) : null)}
-        >{authCtx.account?.user?.name || authCtx.account?.user?.email || ''}</button
+        onclick={() => (appState.auth?.user?.html_url ? open(appState.auth?.user?.html_url) : null)}
+        >{appState.auth?.user?.name || appState.auth?.user?.email || ''}</button
       >
     </div>
     <div class="flex justify-between">
@@ -110,7 +107,7 @@
       </button>
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
-        onclick={authCtx.signOut}
+        onclick={appState.signOut}
         title="Sign Out"
         aria-label="Sign out of application"
       >

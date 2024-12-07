@@ -5,14 +5,10 @@
   import RepoIcon from './RepoIcon.svelte';
   import PRIcon from './PRIcon.svelte';
   import { getContrastYIQ, hexToRGBA, getPRState, getStatusType, formatDate } from './utils';
-  import { getGithubContext, getThemeContext } from '$lib/stores/contexts';
+  import { appState } from '$lib/appState.svelte';
   import { cn } from '$lib/utils';
 
   let { pr, index }: { pr: GitHubPR; index: number } = $props();
-
-  const themeCtx = getThemeContext();
-
-  const ghCtx = getGithubContext();
 
   const prState = getPRState(pr);
   const status = getStatusType(pr);
@@ -22,7 +18,7 @@
 <div
   role="menuitem"
   tabindex={index + 1}
-  data-compact={ghCtx.settings.isCompactMode}
+  data-compact={appState.settings.isCompactMode}
   class="group flex flex-col gap-2 border bg-background px-3 py-2 outline-0 -outline-offset-2 transition-all duration-200 hover:bg-foreground/5 data-[compact=true]:gap-0"
   class:opacity-60={pr.node.closed && !pr.node.merged}
 >
@@ -39,7 +35,7 @@
             <div class="mr-[6px] h-2 w-2 animate-pulse cursor-default rounded-full bg-blue-500"></div>
           </TooltipTrigger>
           <TooltipContent
-            class={cn('border border-blue-500/25', ghCtx.settings.isCompactMode && 'px-1 py-0 text-[12px]')}
+            class={cn('border border-blue-500/25', appState.settings.isCompactMode && 'px-1 py-0 text-[12px]')}
             >Unread</TooltipContent
           >
         </Tooltip>
@@ -93,13 +89,13 @@
     <div class="flex flex-row items-center gap-2 group-data-[compact=true]:gap-1">
       {#if pr.node.labels.edges.length > 0}
         {#each pr.node.labels.edges as label}
-          {#if themeCtx.isDark}
+          {#if appState.isDark}
             <span
               class="items-center rounded-full border px-2 text-xs text-black group-data-[compact=true]:p-0 group-data-[compact=true]:text-[10px]"
               style="color: #{label.node.color}; filter: brightness(160%); border-color: {hexToRGBA(
                 label.node.color,
-                ghCtx.settings.isCompactMode ? 0 : 0.3
-              )}; background-color: {hexToRGBA(label.node.color, ghCtx.settings.isCompactMode ? 0 : 0.18)};"
+                appState.settings.isCompactMode ? 0 : 0.3
+              )}; background-color: {hexToRGBA(label.node.color, appState.settings.isCompactMode ? 0 : 0.18)};"
               >{label.node.name}</span
             >
           {:else}

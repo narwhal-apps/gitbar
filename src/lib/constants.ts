@@ -1,4 +1,4 @@
-import type { GithubSettings, SettingsState } from '../../types.ts';
+import type { GithubSettings, SettingsState } from '../types.ts';
 
 export const defaultSettings: SettingsState = {
   openAtStartup: false,

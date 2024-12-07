@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { getGithubContext } from '$lib/stores/contexts';
+  import { appState } from '$lib/appState.svelte';
   import { cn } from '$lib/utils';
   import type { PullRequestState } from './types';
 
   let { state }: { state: PullRequestState } = $props();
-  const ghCtx = getGithubContext();
 
   const iconColors = {
     open: 'text-green-600 dark:text-green-500',
@@ -15,7 +14,7 @@
 
 {#if state === 'open'}
   <svg
-    class={cn('h-5 w-5', iconColors[state], ghCtx.settings.isCompactMode && 'h-3 w-3')}
+    class={cn('h-5 w-5', iconColors[state], appState.settings.isCompactMode && 'h-3 w-3')}
     viewBox="0 0 16 16"
     fill="currentColor"
   >
@@ -25,7 +24,7 @@
   </svg>
 {:else if state === 'draft'}
   <svg
-    class={cn('h-5 w-5', iconColors[state], ghCtx.settings.isCompactMode && 'h-3 w-3')}
+    class={cn('h-5 w-5', iconColors[state], appState.settings.isCompactMode && 'h-3 w-3')}
     viewBox="0 0 16 16"
     fill="currentColor"
   >
@@ -35,7 +34,7 @@
   </svg>
 {:else if state === 'merged'}
   <svg
-    class={cn('h-5 w-5', iconColors[state], ghCtx.settings.isCompactMode && 'h-3 w-3')}
+    class={cn('h-5 w-5', iconColors[state], appState.settings.isCompactMode && 'h-3 w-3')}
     viewBox="0 0 16 16"
     fill="currentColor"
   >
