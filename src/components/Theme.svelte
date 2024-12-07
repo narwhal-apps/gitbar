@@ -10,7 +10,7 @@
     class="{appState.isDark ? 'bg-input ' : 'bg-primary'}
     peer relative inline-flex h-[24px] w-[44px] flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
     type="button"
-    onclick={appState.toggleTheme}
+    onclick={() => appState.toggleTheme()}
   >
     <span class="sr-only">Toggle Dark Mode</span>
     <span

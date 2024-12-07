@@ -3,10 +3,16 @@
   import { appState } from '$lib/appState.svelte';
   import Empty from './review/Empty.svelte';
   import Card from './review/Card.svelte';
+  import { onMount } from 'svelte';
 
   let loading = $state(false);
 
-  // const context = appState.getState();
+  onMount(() => {
+    loading = true;
+    appState.fetchReviews().finally(() => {
+      loading = false;
+    });
+  });
 
   const skeletons = 5;
 </script>

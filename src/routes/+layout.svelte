@@ -11,6 +11,14 @@
 
     appState.theme = isDark ? 'dark' : 'light';
   });
+
+  $effect(() => {
+    if (appState.isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  });
 </script>
 
 <svelte:head>

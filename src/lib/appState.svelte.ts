@@ -15,6 +15,7 @@ class AppState {
   private _reviewCount: number = $state(0);
   private _availableOrgs: { value: string; label: string }[] = $state([]);
   private _theme: 'light' | 'dark' = $state('dark');
+  private _isDark: boolean = $derived(this._theme === 'dark');
   private _settings: SettingsState = $state(initialState.settings ?? defaultSettings);
 
   async signIn({ token, hostname = 'github.com' }: AuthTokenOptions): Promise<void> {
@@ -84,7 +85,7 @@ class AppState {
   }
 
   get isDark() {
-    return this._theme === 'dark';
+    return this._isDark;
   }
 
   get auth() {
