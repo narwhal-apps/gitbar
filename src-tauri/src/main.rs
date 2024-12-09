@@ -7,11 +7,20 @@ use tauri::{Manager, Runtime, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
 mod commands;
 mod server;
+mod state;
 mod system_tray;
 mod utils;
 
-use commands::{set_review_count, start_server, stop_server};
+use commands::{start_server, stop_server};
 use server::AuthServer;
+
+use state::{
+    commands::{
+        github::{fetch_github_reviews, get_user, login, logout},
+        state::{get_state, update_partial_state, update_state},
+    },
+    init_store,
+};
 
 use std::sync::Mutex;
 
@@ -80,8 +89,14 @@ pub fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
         .manage(Mutex::new(AuthServer::new()))
         .setup(move |app| {
+            init_store(app).map_err(|e| {
+                println!("Failed to initialize store: {:?}", e);
+                e
+            })?;
+
             #[cfg(desktop)]
             {
                 use tauri_plugin_autostart::MacosLauncher;
@@ -147,9 +162,15 @@ pub fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            set_review_count,
+            update_state,
+            get_state,
+            update_partial_state,
+            fetch_github_reviews,
+            get_user,
+            login,
+            logout,
             start_server,
-            stop_server
+            stop_server,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -24,7 +24,9 @@
         {
           "url": "https://**/"
         },
-        { "url": "https://*.tauri.app" },
+        {
+          "url": "https://*.tauri.app"
+        },
         {
           "url": "https://github.com/*"
         },
@@ -45,6 +47,7 @@
     "notification:default",
     "notification:default",
     "http:default",
-    "shell:default"
+    "shell:default",
+    "store:default"
   ]
 }

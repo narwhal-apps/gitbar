@@ -2,21 +2,42 @@ import { invoke } from '@tauri-apps/api/core';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification';
 import { disable, enable } from '@tauri-apps/plugin-autostart';
 import { getUserData, getOrganizations, getReviews } from '$lib/api';
-import { clearState, loadState, saveState } from '$lib/storage';
-import type { GithubSettings, SettingsState, AuthState, AuthTokenOptions, Review } from '../types';
+import { clearState, saveState } from '$lib/storage';
+import type { GithubSettings, SettingsState, AuthState, AuthTokenOptions, ReviewEdge } from '../types/index';
 import { defaultSettings, defaultGithubSettings } from './constants';
 
-const initialState = loadState();
-
 class AppState {
-  private _auth: AuthState | undefined = $state(initialState.account ?? undefined);
-  private _github: GithubSettings = $state(initialState.githubSettings ?? defaultGithubSettings);
-  private _reviews: Review['edges'] = $state([]);
-  private _reviewCount: number = $state(0);
+  private _auth: AuthState | undefined = $state(undefined);
+  private _github: GithubSettings = $state(defaultGithubSettings);
+  private _reviews: Array<ReviewEdge> = $state([]);
+  private _issueCount: number = $state(0);
   private _availableOrgs: { value: string; label: string }[] = $state([]);
   private _theme: 'light' | 'dark' = $state('dark');
   private _isDark: boolean = $derived(this._theme === 'dark');
-  private _settings: SettingsState = $state(initialState.settings ?? defaultSettings);
+  private _settings: SettingsState = $state(defaultSettings);
+  private _initializing: boolean = $state(true);
+
+  async initialize(initialData: {
+    auth?: AuthState;
+    github?: GithubSettings;
+    reviews?: Array<ReviewEdge>;
+    issueCount?: number;
+    availableOrgs?: { value: string; label: string }[];
+    theme?: 'light' | 'dark';
+    settings?: SettingsState;
+  }) {
+    try {
+      this._auth = initialData.auth ?? undefined;
+      this._github = initialData.github ?? defaultGithubSettings;
+      this._reviews = initialData.reviews ?? [];
+      this._issueCount = initialData.reviews?.length ?? 0;
+      this._availableOrgs = initialData.availableOrgs ?? [];
+      this._theme = initialData.theme ?? 'dark';
+      this._settings = initialData.settings ?? defaultSettings;
+    } finally {
+      this._initializing = false;
+    }
+  }
 
   async signIn({ token, hostname = 'github.com' }: AuthTokenOptions): Promise<void> {
     const user = await getUserData(token, hostname);
@@ -54,19 +75,20 @@ class AppState {
     if (this._auth) {
       const res = await getReviews(this._auth, this._github);
 
-      if (res.issueCount > this._reviewCount) {
+      if (res.issueCount > this._issueCount) {
         const title = res.edges[0].node.title;
         this.notification(`New review request: ${title}`);
       }
 
-      if (res.issueCount !== this._reviewCount) {
-        this._reviewCount = res.issueCount;
+      if (res.issueCount !== this._issueCount) {
+        this._issueCount = res.issueCount;
         this._reviews = res.edges;
         invoke('set_review_count', { count: String(res.issueCount) });
       }
 
       const orgs = await getOrganizations(this._auth);
       this._availableOrgs = orgs.map(org => ({ value: org, label: org }));
+      invoke('update_state', { updatedState: this.getState });
     }
   }
 
@@ -112,12 +134,12 @@ class AppState {
     this._reviews = value;
   }
 
-  get reviewCount() {
-    return this._reviewCount;
+  get issueCount() {
+    return this._issueCount;
   }
 
-  set reviewCount(value) {
-    this._reviewCount = value;
+  set issueCount(value) {
+    this._issueCount = value;
   }
 
   get availableOrgs() {
@@ -142,6 +164,22 @@ class AppState {
 
   set settings(value) {
     this._settings = value;
+  }
+
+  get initializing() {
+    return this._initializing;
+  }
+
+  get getState() {
+    return {
+      auth: this._auth,
+      github: this._github,
+      settings: this._settings,
+      issueCount: this._issueCount,
+      reviews: this._reviews,
+      availableOrgs: this._availableOrgs,
+      theme: this._theme,
+    };
   }
 }
 

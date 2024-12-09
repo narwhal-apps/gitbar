@@ -8,10 +8,12 @@
   let loading = $state(false);
 
   onMount(() => {
-    loading = true;
-    appState.fetchReviews().finally(() => {
-      loading = false;
-    });
+    if (appState.reviews.length === 0) {
+      loading = true;
+      appState.fetchReviews().finally(() => {
+        loading = false;
+      });
+    }
   });
 
   const skeletons = 5;
