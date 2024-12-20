@@ -16,14 +16,23 @@
   const defaultHost = 'github.com';
 
   let token = $state('');
-  let hostname = $state(defaultHost);
-  const formData = $derived({ token, hostname });
+  let hostname = $state<string | undefined>(undefined);
+
   let fieldErrors = $state<{ [x: string]: [string, ...string[]] } | undefined>(undefined);
   let loading = $state(false);
   let processing = $state(false);
 
   let port: number;
   let unlistenFn: () => void;
+
+  $effect(() => {
+    if (hostname === '') {
+      hostname = undefined;
+      if (fieldErrors && fieldErrors['hostname']) {
+        delete fieldErrors['hostname'];
+      }
+    }
+  });
 
   function handleToken() {
     open(createAuthURL(port));
@@ -60,14 +69,14 @@
   });
 
   const handleSubmit = async () => {
-    const { issues, success } = safeParse<LoginSchema>(loginSchema, formData);
+    const { issues, success } = safeParse<LoginSchema>(loginSchema, { token, hostname });
 
     fieldErrors = issues ? flatten<LoginSchema>(issues).nested : undefined;
 
     if (success) {
       loading = true;
       try {
-        await appState.signIn(formData);
+        await invoke('login', { token, hostname });
       } finally {
         loading = false;
       }

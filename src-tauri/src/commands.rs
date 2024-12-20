@@ -15,15 +15,3 @@ pub fn stop_server(state: State<'_, Mutex<AuthServer>>) {
     let mut server = state.lock().unwrap();
     server.stop();
 }
-
-#[tauri::command]
-pub fn set_review_count(app_handle: AppHandle, count: &str) {
-    let tray = app_handle.tray_by_id("gitbar-tray").unwrap();
-    let mut rev_count = count.to_string();
-    let count_number = count.parse::<i32>().unwrap_or_default();
-    if count_number > 0 {
-        rev_count.insert_str(0, " ");
-    }
-    #[cfg(target_os = "macos")]
-    tray.set_title(Some(rev_count)).unwrap();
-}

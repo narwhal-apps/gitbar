@@ -5,6 +5,7 @@
   import Settings from './Settings.svelte';
   import Filters from './Filters.svelte';
   import { appState } from '$lib/appState.svelte';
+  import { invoke } from '@tauri-apps/api/core';
 
   let fetching = $state(false);
   let settingsVisible = $state(false);
@@ -32,9 +33,9 @@
   <div class="flex justify-between">
     <div class="flex items-center p-2">
       <Avatar.Root class="h-6 w-6 flex-shrink-0">
-        <Avatar.Image src={appState.auth?.user?.avatar_url} alt={appState.auth?.user?.name || ''} />
+        <Avatar.Image src={appState.auth?.user?.avatar_url} alt={appState.auth?.user?.login || ''} />
         <Avatar.Fallback class="border border-muted text-xs font-medium uppercase text-muted-foreground"
-          >{avatarFallback(appState.auth?.user?.name)}</Avatar.Fallback
+          >{avatarFallback(appState.auth?.user?.login)}</Avatar.Fallback
         >
       </Avatar.Root>
       <button
@@ -42,7 +43,7 @@
           appState.auth?.user?.html_url ? 'cursor-pointer hover:text-slate-600/70 dark:hover:text-white/70' : ''
         } ml-1 block truncate`}
         onclick={() => (appState.auth?.user?.html_url ? open(appState.auth?.user?.html_url) : null)}
-        >{appState.auth?.user?.name || appState.auth?.user?.email || ''}</button
+        >{appState.auth?.user?.login || appState.auth?.user?.email || ''}</button
       >
     </div>
     <div class="flex justify-between">
@@ -107,7 +108,7 @@
       </button>
       <button
         class="p-2 text-slate-600 hover:text-slate-600/70 dark:text-white dark:hover:text-white/70"
-        onclick={appState.signOut}
+        onclick={() => invoke('logout')}
         title="Sign Out"
         aria-label="Sign out of application"
       >
