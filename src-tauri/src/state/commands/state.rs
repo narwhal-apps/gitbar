@@ -1,4 +1,5 @@
 use crate::state::types::{AppState, ManagedState};
+use log::{error, info};
 
 #[tauri::command]
 pub async fn update_state(
@@ -6,24 +7,24 @@ pub async fn update_state(
     state: tauri::State<'_, ManagedState>,
     updated_state: serde_json::Value,
 ) -> Result<(), String> {
-    println!("Update state command received");
+    info!("Update state command received");
 
     match AppState::from_json(updated_state.clone()) {
         Ok(new_state) => {
-            println!("Successfully parsed new state");
+            info!("Successfully parsed new state");
             state
                 .update(&app_handle, |current_state| {
                     *current_state = new_state;
-                    println!("State updated successfully");
+                    info!("State updated successfully");
                 })
                 .map_err(|e| {
-                    println!("Failed to update state: {:?}", e);
+                    error!("Failed to update state: {:?}", e);
                     e.to_string()
                 })
         }
         Err(e) => {
-            println!("Failed to parse state: {:?}", e);
-            println!("Received state structure: {:#?}", updated_state);
+            error!("Failed to parse state: {:?}", e);
+            error!("Received state structure: {:#?}", updated_state);
             Err(format!("Failed to parse state: {}", e))
         }
     }
@@ -82,7 +83,7 @@ pub async fn update_partial_state(
                     current_state.theme = theme;
                 }
             }
-            _ => println!("Unknown field: {}", field),
+            _ => info!("Unknown field: {}", field),
         })
         .map_err(|e| e.to_string())
 }

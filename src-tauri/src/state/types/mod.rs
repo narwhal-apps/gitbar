@@ -9,7 +9,9 @@ mod settings;
 
 pub use app_state::{AppState, ManagedState, StateChangePayload, StateField, Theme};
 pub use auth::AuthState;
-pub use github::{Author, GithubSettings, Review, UserId};
+pub use github::{
+    Author, GithubSettings, Label, Labels, PullRequest, Review, StatusCheckRollup, UserId,
+};
 pub use settings::SettingsState;
 
 impl AppState {

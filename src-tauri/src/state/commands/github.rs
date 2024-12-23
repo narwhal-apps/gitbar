@@ -1,23 +1,33 @@
 use crate::state::github::client::get_user_info;
 use crate::state::github::client::GitHubClient;
 use crate::state::types::{AppState, ManagedState};
+use log::info;
 
 #[tauri::command]
 pub async fn fetch_github_reviews(
     app_handle: tauri::AppHandle,
     state: tauri::State<'_, ManagedState>,
 ) -> Result<(), String> {
+    info!("Fetching GitHub reviews");
     // Extract the needed values and clone the client while holding the lock
     let (username, github_client) = {
         let state_guard = state.data.lock().unwrap();
-        let client_guard = state.github_client.lock().unwrap();
+        let mut client_guard = state.github_client.lock().unwrap();
 
         // Get auth info from state
         let auth = state_guard.auth.as_ref().ok_or("Not authenticated")?;
         let user = auth.user.as_ref().ok_or("No user found")?;
-        let client = client_guard
-            .as_ref()
-            .ok_or("GitHub client not initialized")?;
+        let token = auth.token.as_ref().ok_or("No token found")?;
+
+        // If client is not initialized, create a new one
+        if client_guard.is_none() {
+            *client_guard = Some(
+                GitHubClient::create_client(token, auth.hostname.clone())
+                    .map_err(|e| e.to_string())?,
+            );
+        }
+
+        let client = client_guard.as_ref().unwrap();
 
         // Return the values we need
         (user.login.clone(), client.clone())
@@ -29,12 +39,65 @@ pub async fn fetch_github_reviews(
         .await
         .map_err(|e| e.to_string())?;
 
+    info!("Fetched {} reviews", reviews.len());
+
     state
         .update(&app_handle, |current_state| {
             current_state.issue_count = reviews.len() as i32;
             current_state.reviews = reviews;
         })
-        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string());
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn fetch_github_reviews_2(
+    app_handle: tauri::AppHandle,
+    state: tauri::State<'_, ManagedState>,
+) -> Result<(), String> {
+    info!("graphql test");
+    // Extract the needed values and clone the client while holding the lock
+    let (username, github_client) = {
+        let state_guard = state.data.lock().unwrap();
+        let mut client_guard = state.github_client.lock().unwrap();
+
+        // Get auth info from state
+        let auth = state_guard.auth.as_ref().ok_or("Not authenticated")?;
+        let user = auth.user.as_ref().ok_or("No user found")?;
+        let token = auth.token.as_ref().ok_or("No token found")?;
+
+        // If client is not initialized, create a new one
+        if client_guard.is_none() {
+            *client_guard = Some(
+                GitHubClient::create_client(token, auth.hostname.clone())
+                    .map_err(|e| e.to_string())?,
+            );
+        }
+
+        let client = client_guard.as_ref().unwrap();
+
+        // Return the values we need
+        (user.login.clone(), client.clone())
+    }; // MutexGuards are dropped here
+
+    // Now we can make the async call using the cloned client
+    let reviews = github_client
+        .get_all_relevant_prs_2(&username)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    info!("Fetched {} reviews", reviews.len());
+    info!("Fetched {:?} reviews", reviews);
+
+    // state
+    //     .update(&app_handle, |current_state| {
+    //         current_state.issue_count = reviews.len() as i32;
+    //         current_state.reviews = reviews;
+    //     })
+    //     .map_err(|e| e.to_string());
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -69,13 +132,8 @@ pub async fn login(
     token: String,
     hostname: Option<String>,
 ) -> Result<AppState, String> {
-    println!("{}", &token);
-    println!("{:?}", &hostname);
-
-    let client = match &hostname {
-        Some(host) => GitHubClient::new_enterprise(&token, host).map_err(|e| e.to_string())?,
-        None => GitHubClient::new(&token).map_err(|e| e.to_string())?,
-    };
+    let client =
+        GitHubClient::create_client(&token, hostname.clone()).map_err(|e| e.to_string())?;
 
     let user = client.get_user_info().await.map_err(|e| e.to_string())?;
 

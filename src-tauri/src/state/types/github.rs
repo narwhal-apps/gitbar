@@ -37,6 +37,42 @@ pub struct UserId(pub u64);
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
 #[ts(export, export_to = "index.ts")]
+pub struct Label {
+    pub name: String,
+    pub color: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct Labels(pub Vec<Label>);
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct StatusCheckRollup {
+    pub state: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
+#[ts(export, export_to = "index.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PullRequest {
+    pub title: String,
+    pub url: String,
+    pub number: i64,
+    pub repository: String,
+    pub author: Author,
+    pub created_at: String,
+    pub closed: bool,
+    pub is_draft: bool,
+    pub review_decision: String,
+    pub total_comments_count: i64,
+    pub is_read_by_viewer: bool,
+    pub labels: Labels,
+    pub status_check_rollup: StatusCheckRollup,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
+#[ts(export, export_to = "index.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Review {
     pub repository: String,
@@ -50,9 +86,9 @@ pub struct Review {
     pub is_draft: bool,
     pub review_decision: String, // Change from enum to String temporarily
     pub total_comments_count: u32,
-    // pub labels: Labels, // Change from Vec<Label> to Labels struct
-    // pub status_check_rollup: StatusCheckRollup,
-    // pub is_read_by_viewer: bool,
+    pub labels: Labels, // Change from Vec<Label> to Labels struct
+    pub status_check_rollup: StatusCheckRollup,
+    pub is_read_by_viewer: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
@@ -60,24 +96,6 @@ pub struct Review {
 #[serde(rename_all = "camelCase")]
 pub struct Author {
     pub login: String,
-    pub id: UserId,
-    pub node_id: String,
     pub avatar_url: String,
-    pub gravatar_id: String,
     pub url: String,
-    pub html_url: String,
-    pub followers_url: String,
-    pub following_url: String,
-    pub gists_url: String,
-    pub starred_url: String,
-    pub subscriptions_url: String,
-    pub organizations_url: String,
-    pub repos_url: String,
-    pub events_url: String,
-    pub received_events_url: String,
-    pub r#type: String,
-    pub site_admin: bool,
-    pub patch_url: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub email: Option<String>,
 }

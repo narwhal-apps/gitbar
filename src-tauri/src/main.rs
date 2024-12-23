@@ -17,7 +17,7 @@ use server::AuthServer;
 
 use state::{
     commands::{
-        github::{fetch_github_reviews, get_user, login, logout},
+        github::{fetch_github_reviews, fetch_github_reviews_2, get_user, login, logout},
         state::{get_state, update_partial_state, update_state},
     },
     init_store,
@@ -193,6 +193,7 @@ pub fn main() {
             get_state,
             update_partial_state,
             fetch_github_reviews,
+            fetch_github_reviews_2,
             get_user,
             login,
             logout,
