@@ -2,8 +2,8 @@
 
 export type AppState = {
   auth: AuthState | null;
-  settings: SettingsState | null;
-  github: GithubSettings | null;
+  settings: SettingsState;
+  github: GithubSettings;
   issueCount: number;
   reviews: Array<Review>;
   availableOrgs: Array<Organization>;
@@ -17,23 +17,23 @@ export type AuthTokenOptions = { hostname: string; token: string };
 export type Author = {
   login: string;
   id: UserId;
-  node_id: string;
-  avatar_url: string;
-  gravatar_id: string;
+  nodeId: string;
+  avatarUrl: string;
+  gravatarId: string;
   url: string;
-  html_url: string;
-  followers_url: string;
-  following_url: string;
-  gists_url: string;
-  starred_url: string;
-  subscriptions_url: string;
-  organizations_url: string;
-  repos_url: string;
-  events_url: string;
-  received_events_url: string;
+  htmlUrl: string;
+  followersUrl: string;
+  followingUrl: string;
+  gistsUrl: string;
+  starredUrl: string;
+  subscriptionsUrl: string;
+  organizationsUrl: string;
+  reposUrl: string;
+  eventsUrl: string;
+  receivedEventsUrl: string;
   type: string;
-  site_admin: boolean;
-  patch_url: string | null;
+  siteAdmin: boolean;
+  patchUrl: string | null;
   email: string | null;
 };
 
@@ -43,16 +43,15 @@ export type Organization = { value: string; label: string };
 
 export type Review = {
   repository: string;
-  author: string;
-  author_object: Author;
-  created_at: string;
+  author: Author;
+  createdAt: string;
   number: bigint;
   url: string;
   title: string;
   closed: boolean;
-  is_draft: boolean;
-  review_decision: string;
-  total_comments_count: number;
+  isDraft: boolean;
+  reviewDecision: string;
+  totalCommentsCount: number;
 };
 
 export type SettingsState = { openAtStartup: boolean; isCompactMode: boolean; fetchInterval: number };

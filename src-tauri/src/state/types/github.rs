@@ -3,11 +3,25 @@ use ts_rs::TS;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
 #[ts(export, export_to = "index.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct GithubSettings {
+    #[serde(default)]
     pub archive: bool,
+    #[serde(default)]
     #[serde(rename = "type")]
     pub request_type: String, // Change from enum to String temporarily
+    #[serde(default)]
     pub state: String, // Change from enum to String temporarily
+}
+
+impl Default for GithubSettings {
+    fn default() -> Self {
+        Self {
+            archive: false,
+            request_type: "review-requested".to_string(),
+            state: "open".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
@@ -23,11 +37,10 @@ pub struct UserId(pub u64);
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
 #[ts(export, export_to = "index.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct Review {
     pub repository: String,
-    pub author: String,
-    pub author_object: Author,
-    // pub created_at: DateTime<Utc>,
+    pub author: Author,
     pub created_at: String,
     pub number: u64, // Change from String to i32
     pub url: String,
@@ -44,6 +57,7 @@ pub struct Review {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
 #[ts(export, export_to = "index.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct Author {
     pub login: String,
     pub id: UserId,

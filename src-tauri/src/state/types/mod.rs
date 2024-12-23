@@ -7,11 +7,23 @@ mod auth;
 mod github;
 mod settings;
 
-pub use app_state::{AppState, ManagedState, StateChangePayload, StateField};
+pub use app_state::{AppState, ManagedState, StateChangePayload, StateField, Theme};
 pub use auth::AuthState;
-pub use github::{Author, Review, UserId};
+pub use github::{Author, GithubSettings, Review, UserId};
+pub use settings::SettingsState;
 
 impl AppState {
+    pub fn default() -> Self {
+        Self {
+            auth: None,
+            settings: SettingsState::default(),
+            github: GithubSettings::default(),
+            reviews: Vec::new(),
+            issue_count: 0,
+            available_orgs: Vec::new(),
+            theme: Theme::Dark,
+        }
+    }
     pub fn to_json(&self) -> serde_json::Value {
         json!({
             "auth": self.auth,
@@ -39,7 +51,7 @@ impl ManagedState {
     where
         F: FnOnce(&mut AppState),
     {
-        let mut state = self.state.lock().unwrap();
+        let mut state = self.data.lock().unwrap();
         let old_state = state.clone(); // Clone the state before update
 
         updater(&mut state);
@@ -79,24 +91,34 @@ impl ManagedState {
     fn detect_changes(&self, old_state: &AppState, new_state: &AppState) -> Vec<StateField> {
         let mut changed_fields = Vec::new();
 
-        if old_state.auth.as_ref() != new_state.auth.as_ref() {
-            changed_fields.push(StateField::Auth);
+        // More explicit comparisons
+        match (&old_state.auth, &new_state.auth) {
+            (Some(old), Some(new)) if old != new => changed_fields.push(StateField::Auth),
+            (Some(_), None) | (None, Some(_)) => changed_fields.push(StateField::Auth),
+            _ => {}
         }
-        if old_state.settings.as_ref() != new_state.settings.as_ref() {
+
+        // Settings comparison (direct comparison since it's not Optional)
+        if old_state.settings != new_state.settings {
             changed_fields.push(StateField::Settings);
         }
-        if old_state.github.as_ref() != new_state.github.as_ref() {
+
+        if old_state.github != new_state.github {
             changed_fields.push(StateField::Github);
         }
+
         if old_state.issue_count != new_state.issue_count {
             changed_fields.push(StateField::IssueCount);
         }
+
         if old_state.reviews != new_state.reviews {
             changed_fields.push(StateField::Reviews);
         }
+
         if old_state.available_orgs != new_state.available_orgs {
             changed_fields.push(StateField::AvailableOrgs);
         }
+
         if old_state.theme != new_state.theme {
             changed_fields.push(StateField::Theme);
         }
@@ -105,6 +127,6 @@ impl ManagedState {
     }
 
     pub fn get(&self) -> AppState {
-        self.state.lock().unwrap().clone()
+        self.data.lock().unwrap().clone()
     }
 }

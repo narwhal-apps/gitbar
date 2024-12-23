@@ -3,6 +3,7 @@
     windows_subsystem = "windows"
 )]
 
+use log::{error, info};
 use tauri::{Manager, Runtime, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
 mod commands;
@@ -23,6 +24,20 @@ use state::{
 };
 
 use std::sync::Mutex;
+
+#[cfg(debug_assertions)]
+fn open_browser(url: &str) -> Result<(), Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        std::process::Command::new("cmd")
+            .args(["/C", &format!("start {}", url)])
+            .spawn()?;
+    } else if cfg!(target_os = "macos") {
+        std::process::Command::new("open").arg(url).spawn()?;
+    } else {
+        std::process::Command::new("xdg-open").arg(url).spawn()?;
+    }
+    Ok(())
+}
 
 #[cfg(target_os = "macos")]
 use cocoa::appkit::{NSWindow, NSWindowButton, NSWindowStyleMask, NSWindowTitleVisibility};
@@ -81,6 +96,7 @@ impl<R: Runtime> WindowExt for WebviewWindow<R> {
 pub fn main() {
     #[cfg(debug_assertions)]
     let builder = tauri::Builder::default().plugin(tauri_plugin_devtools::init());
+
     #[cfg(not(debug_assertions))]
     let builder = tauri::Builder::default();
 
@@ -93,7 +109,7 @@ pub fn main() {
         .manage(Mutex::new(AuthServer::new()))
         .setup(move |app| {
             init_store(app).map_err(|e| {
-                println!("Failed to initialize store: {:?}", e);
+                error!("Failed to initialize store: {:?}", e);
                 e
             })?;
 
@@ -114,7 +130,7 @@ pub fn main() {
                 } else {
                     let _ = autostart_manager.disable();
                 }
-                println!(
+                info!(
                     "Autostart enabled: {}",
                     autostart_manager.is_enabled().unwrap()
                 );
@@ -155,7 +171,18 @@ pub fn main() {
             window.set_always_on_top(true).unwrap();
 
             #[cfg(debug_assertions)]
-            window.open_devtools();
+            {
+                // Display devtools by default
+                window.open_devtools();
+                // Open crabnebula devtools URL in default browser
+                tauri::async_runtime::spawn(async move {
+                    if let Err(e) =
+                        open_browser("https://devtools.crabnebula.dev/dash/127.0.0.1/3000")
+                    {
+                        error!("Failed to open devtools in browser: {}", e);
+                    }
+                });
+            }
 
             let _ = system_tray::setup(app);
 

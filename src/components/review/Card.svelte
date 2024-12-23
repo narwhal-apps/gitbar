@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { open } from '@tauri-apps/plugin-shell';
   import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '$lib/components/ui/tooltip';
-  import type { GitHubPR } from './types';
+  import * as Avatar from '$lib/components/ui/avatar';
+  import type { Review } from '../../types/index';
   import StatusBadge from './StatusBadge.svelte';
   import RepoIcon from './RepoIcon.svelte';
   import PRIcon from './PRIcon.svelte';
@@ -8,27 +10,28 @@
   import { appState } from '$lib/appState.svelte';
   import { cn } from '$lib/utils';
 
-  let { pr, index }: { pr: GitHubPR; index: number } = $props();
+  let { pr, index }: { pr: Review; index: number } = $props();
 
-  const prState = getPRState(pr);
-  const status = getStatusType(pr);
-  const formattedDate = formatDate(new Date(pr.node.createdAt));
+  // const prState = getPRState(pr);
+  // const status = getStatusType(pr);
+  // const formattedDate = formatDate(new Date(pr.created_at));
+
+  // class:opacity-60={pr.closed && !pr.merged}
+  // data-compact={appState.settings.isCompactMode}
 </script>
 
 <div
   role="menuitem"
   tabindex={index + 1}
-  data-compact={appState.settings.isCompactMode}
   class="group flex flex-col gap-2 border bg-background px-3 py-2 outline-0 -outline-offset-2 transition-all duration-200 hover:bg-foreground/5 data-[compact=true]:gap-0"
-  class:opacity-60={pr.node.closed && !pr.node.merged}
 >
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-2 text-sm text-secondary-foreground group-data-[compact=true]:text-xs">
       <RepoIcon />
-      <span>{pr.node.repository.nameWithOwner}</span>
-      <span class="text-github-text-muted">#{pr.node.number}</span>
+      <span>{pr.repository.split('repos/')[1]}</span>
+      <span class="text-github-text-muted">#{pr.number}</span>
     </div>
-    {#if pr.node.isReadByViewer}
+    <!-- {#if pr.isReadByViewer}
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger>
@@ -40,19 +43,19 @@
           >
         </Tooltip>
       </TooltipProvider>
-    {/if}
+    {/if} -->
   </div>
 
   <div class="flex items-center gap-2">
-    <PRIcon state={prState} />
+    <!-- <PRIcon state={prState} /> -->
     <h3 class="truncate font-semibold">
       <a
-        href={pr.node.url}
+        href={pr.url}
         target="_blank"
         rel="noopener noreferrer"
         class="transition-colors hover:text-blue-400 group-data-[compact=true]:text-sm"
       >
-        {pr.node.title}
+        {pr.title}
       </a>
     </h3>
   </div>
@@ -62,19 +65,19 @@
       class="flex flex-row items-center gap-4 text-sm group-data-[compact=true]:gap-2 group-data-[compact=true]:text-xs"
     >
       <span class="flex items-center gap-1 font-medium text-github-text-secondary">
-        {#if pr.node.author.login === 'dependabot'}
-          <img
-            class="avatar"
-            src="https://avatars.githubusercontent.com/in/29110?s=40&amp;v=4"
-            width="20"
-            height="20"
-            alt="bot"
-          />
-        {/if}
-        {pr.node.author.login}
+        <Avatar.Root class="h-4 w-4 flex-shrink-0">
+          <Avatar.Image src={pr.author.avatarUrl} alt={pr.author.login || ''} />
+          <Avatar.Fallback class="border border-muted text-xs font-medium uppercase text-muted-foreground"
+            >{pr.author.login}</Avatar.Fallback
+          >
+        </Avatar.Root>
+        <button
+          class="hover:text-slate-600/70 dark:hover:text-white/70"
+          onclick={() => (pr.author.htmlUrl ? open(pr.author.htmlUrl) : null)}>{pr.author.login}</button
+        >
       </span>
-      <span class="text-github-text-muted">{formattedDate}</span>
-      {#if pr.node.totalCommentsCount > 0}
+      <!-- <span class="text-github-text-muted">{formattedDate}</span> -->
+      {#if pr.totalCommentsCount > 0}
         <span class="flex items-center gap-1 text-github-text-muted">
           <svg class="h-4 w-4 group-data-[compact=true]:h-3 group-data-[compact=true]:w-3" viewBox="0 0 16 16">
             <path
@@ -82,32 +85,31 @@
               d="M1 2.75C1 1.784 1.784 1 2.75 1h10.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 13.25 12H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 13.543V12H2.75A1.75 1.75 0 0 1 1 10.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h4.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
             />
           </svg>
-          {pr.node.totalCommentsCount}
+          {pr.totalCommentsCount}
         </span>
       {/if}
     </div>
     <div class="flex flex-row items-center gap-2 group-data-[compact=true]:gap-1">
-      {#if pr.node.labels.edges.length > 0}
-        {#each pr.node.labels.edges as label}
+      <!-- {#if pr.labels.edges.length > 0}
+        {#each pr.labels.edges as label}
           {#if appState.isDark}
             <span
               class="items-center rounded-full border px-2 text-xs text-black group-data-[compact=true]:p-0 group-data-[compact=true]:text-[10px]"
-              style="color: #{label.node.color}; filter: brightness(160%); border-color: {hexToRGBA(
-                label.node.color,
+              style="color: #{label.color}; filter: brightness(160%); border-color: {hexToRGBA(
+                label.color,
                 appState.settings.isCompactMode ? 0 : 0.3
-              )}; background-color: {hexToRGBA(label.node.color, appState.settings.isCompactMode ? 0 : 0.18)};"
-              >{label.node.name}</span
+              )}; background-color: {hexToRGBA(label.color, appState.settings.isCompactMode ? 0 : 0.18)};"
+              >{label.name}</span
             >
           {:else}
             <span
               class="rounded-full px-2 text-xs font-semibold text-black"
-              style="background-color: #{label.node.color}; color: {getContrastYIQ(label.node.color)};"
-              >{label.node.name}</span
+              style="background-color: #{label.color}; color: {getContrastYIQ(label.color)};">{label.name}</span
             >
           {/if}
         {/each}
-      {/if}
-      <StatusBadge {status} />
+      {/if} -->
+      <!-- <StatusBadge {status} /> -->
     </div>
   </div>
 </div>

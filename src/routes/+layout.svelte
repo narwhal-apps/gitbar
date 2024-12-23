@@ -24,8 +24,6 @@
   onMount(async () => {
     // Get initial state
     const initialState = await invoke<AppState>('get_state');
-
-    // Update initial state
     appState.initialize(initialState);
 
     // Subscribe to state changes
@@ -38,7 +36,6 @@
   });
 
   $effect(() => {
-    invoke('update_state', { updatedState: appState.getState });
     if (appState.isDark) {
       document.documentElement.classList.add('dark');
     } else {

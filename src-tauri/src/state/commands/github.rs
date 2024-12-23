@@ -1,6 +1,6 @@
+use crate::state::github::client::get_user_info;
 use crate::state::github::client::GitHubClient;
-use crate::state::github::client::{get_all_relevant_prs, get_user_info};
-use crate::state::types::ManagedState;
+use crate::state::types::{AppState, ManagedState};
 
 #[tauri::command]
 pub async fn fetch_github_reviews(
@@ -9,7 +9,7 @@ pub async fn fetch_github_reviews(
 ) -> Result<(), String> {
     // Extract the needed values and clone the client while holding the lock
     let (username, github_client) = {
-        let state_guard = state.state.lock().unwrap();
+        let state_guard = state.data.lock().unwrap();
         let client_guard = state.github_client.lock().unwrap();
 
         // Get auth info from state
@@ -44,7 +44,7 @@ pub async fn get_user(
 ) -> Result<(), String> {
     // Extract the needed values while holding the lock
     let token = {
-        let state_guard = state.state.lock().unwrap();
+        let state_guard = state.data.lock().unwrap();
 
         // Get auth info from state
         let auth = state_guard.auth.as_ref().ok_or("Not authenticated")?;
@@ -68,28 +68,30 @@ pub async fn login(
     state: tauri::State<'_, ManagedState>,
     token: String,
     hostname: Option<String>,
-) -> Result<(), String> {
+) -> Result<AppState, String> {
     println!("{}", &token);
     println!("{:?}", &hostname);
 
-    // Create new GitHub client
     let client = match &hostname {
         Some(host) => GitHubClient::new_enterprise(&token, host).map_err(|e| e.to_string())?,
         None => GitHubClient::new(&token).map_err(|e| e.to_string())?,
     };
 
-    // Get user info using the client
     let user = client.get_user_info().await.map_err(|e| e.to_string())?;
 
-    // Update both the client and auth state
+    let reviews = client
+        .get_all_relevant_prs(&user.login)
+        .await
+        .map_err(|e| e.to_string())?;
+
     {
-        // Update GitHub client
         let mut github_client = state.github_client.lock().unwrap();
         *github_client = Some(client);
 
-        // Update auth state
         state
             .update(&app_handle, |current_state| {
+                current_state.issue_count = reviews.len() as i32;
+                current_state.reviews = reviews;
                 current_state.auth = Some(crate::state::types::AuthState {
                     token: Some(token),
                     user: Some(user),
@@ -99,7 +101,7 @@ pub async fn login(
             .map_err(|e| e.to_string())?;
     }
 
-    Ok(())
+    Ok(state.get())
 }
 
 #[tauri::command]
@@ -116,9 +118,7 @@ pub async fn logout(
     // Reset app state to initial values
     state
         .update(&app_handle, |current_state| {
-            current_state.auth = None;
-            current_state.reviews = vec![];
-            current_state.issue_count = 0;
+            *current_state = AppState::default();
             // Add any other state fields that need to be reset
         })
         .map_err(|e| e.to_string())?;

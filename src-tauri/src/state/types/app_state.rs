@@ -23,8 +23,8 @@ pub enum Theme {
 #[serde(rename_all = "camelCase")]
 pub struct AppState {
     pub auth: Option<AuthState>,
-    pub settings: Option<SettingsState>,
-    pub github: Option<GithubSettings>,
+    pub settings: SettingsState,
+    pub github: GithubSettings,
     pub issue_count: i32,
     pub reviews: Vec<Review>,
     pub available_orgs: Vec<Organization>,
@@ -54,6 +54,6 @@ pub struct StateChangePayload {
 
 // Wrap AppState in a Mutex
 pub struct ManagedState {
-    pub state: Mutex<AppState>,
+    pub data: Mutex<AppState>,
     pub github_client: Mutex<Option<GitHubClient>>,
 }

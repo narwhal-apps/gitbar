@@ -1,3 +1,4 @@
+use log::{error, info};
 use std::sync::Mutex;
 use tauri::{App, Manager};
 use tauri_plugin_store::StoreExt;
@@ -9,20 +10,32 @@ pub mod types;
 pub use types::{AppState, ManagedState};
 
 pub fn init_store(app: &App) -> Result<(), Box<dyn std::error::Error>> {
-    println!("Initializing store...");
+    info!("Initializing store...");
 
     // Create or get the store
     let store = app.store("store.json")?;
-    println!("Store accessed successfully");
+    info!("Store accessed successfully");
 
     // Initialize the state
     let state = match store.get("app_state") {
         Some(stored_value) => {
-            println!("Found existing state, attempting to parse");
-            AppState::from_json(stored_value)?
+            info!("Found existing state, attempting to parse");
+            match AppState::from_json(stored_value) {
+                Ok(state) => state,
+                Err(e) => {
+                    error!(
+                        "Failed to parse stored state, falling back to default: {}",
+                        e
+                    );
+                    let default_state = AppState::default();
+                    store.set("app_state".to_string(), default_state.to_json());
+                    store.save()?;
+                    default_state
+                }
+            }
         }
         None => {
-            println!("No existing state found, creating default");
+            info!("No existing state found, creating default");
             let default_state = AppState::default();
             store.set("app_state".to_string(), default_state.to_json());
             store.save()?;
@@ -30,12 +43,12 @@ pub fn init_store(app: &App) -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    println!("Creating managed state");
+    info!("Creating managed state");
     app.manage(ManagedState {
-        state: Mutex::new(state),
+        data: Mutex::new(state),
         github_client: Mutex::new(None),
     });
-    println!("State managed successfully");
+    info!("State managed successfully");
 
     Ok(())
 }

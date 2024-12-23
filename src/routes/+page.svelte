@@ -4,7 +4,7 @@
   import { appState } from '$lib/appState.svelte';
 </script>
 
-{#if appState.isAuthenticated}
+{#if appState.isLoggedIn}
   <App />
 {:else}
   <Login />

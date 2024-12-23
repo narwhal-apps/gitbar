@@ -23,7 +23,7 @@
   let processing = $state(false);
 
   let port: number;
-  let unlistenFn: () => void;
+  let unlistenFn: () => void = () => {};
 
   $effect(() => {
     if (hostname === '') {

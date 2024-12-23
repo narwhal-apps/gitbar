@@ -1,64 +1,10 @@
 use crate::state::types::{Author, Review, UserId};
+use log::{error, info};
 use octocrab::models::Author as OctocrabAuthor;
 use octocrab::models::UserId as OctocrabUserId;
 use octocrab::{models, Octocrab};
 use std::error::Error;
 use std::sync::Arc;
-
-pub async fn get_all_relevant_prs(
-    username: &str,
-    token: &str,
-) -> Result<Vec<Review>, octocrab::Error> {
-    let octocrab = Octocrab::builder()
-        .personal_token(String::from(token))
-        .build()?;
-
-    let search_query = format!("type:pr state:open review-requested:{}", username);
-    println!("GitHub API Search Query: {}", search_query);
-
-    let search_results = match octocrab
-        .search()
-        .issues_and_pull_requests(&search_query)
-        .per_page(100)
-        .sort("updated")
-        .order("desc")
-        .send()
-        .await
-    {
-        Ok(results) => results,
-        Err(err) => {
-            println!("GitHub API Error: {:?}", err);
-            if let Some(source) = err.source() {
-                println!("Error source: {:?}", source);
-            }
-            return Err(err);
-        }
-    };
-
-    println!(
-        "Search Results: {}",
-        serde_json::to_string_pretty(&search_results.items).unwrap()
-    );
-    println!("Number of results: {}", search_results.items.len());
-
-    Ok(search_results
-        .items
-        .into_iter()
-        .map(|issue| Review {
-            repository: issue.repository_url.to_string(),
-            author: issue.user.login.clone(),
-            author_object: Author::from(issue.user),
-            created_at: issue.created_at.to_string(),
-            number: issue.number,
-            url: issue.html_url.to_string(),
-            title: issue.title,
-            closed: issue.state == models::IssueState::Closed,
-            is_draft: false,
-            review_decision: String::from(""),
-            total_comments_count: issue.comments,
-        })
-        .collect())
-}
 
 impl From<OctocrabAuthor> for Author {
     fn from(author: OctocrabAuthor) -> Self {
@@ -102,7 +48,7 @@ pub async fn get_user_info(token: &str) -> Result<Author, Box<dyn std::error::Er
     // Get authenticated user (if using authentication)
     let current_user = octocrab.current().user().await?;
 
-    println!("Current user: {:?}", current_user);
+    info!("Current user: {:?}", current_user);
 
     Ok(Author::from(current_user))
 }
@@ -117,7 +63,7 @@ pub async fn login_user(token: &str, hostname: &str) -> Result<(), Box<dyn std::
     // Get authenticated user
     let current_user = octocrab.current().user().await?;
 
-    println!("Current user: {:?}", current_user);
+    info!("Current user: {:?}", current_user);
 
     Ok(())
 }
@@ -179,8 +125,7 @@ impl GitHubClient {
             .into_iter()
             .map(|issue| Review {
                 repository: issue.repository_url.to_string(),
-                author: issue.user.login.clone(),
-                author_object: Author::from(issue.user),
+                author: Author::from(issue.user),
                 created_at: issue.created_at.to_string(),
                 number: issue.number,
                 url: issue.html_url.to_string(),
@@ -195,7 +140,7 @@ impl GitHubClient {
 
     pub async fn get_user_info(&self) -> Result<Author, Box<dyn std::error::Error>> {
         let current_user = self.client().current().user().await?;
-        println!("Current user: {:?}", current_user);
+        info!("Current user: {:?}", current_user);
         Ok(Author::from(current_user))
     }
 }
