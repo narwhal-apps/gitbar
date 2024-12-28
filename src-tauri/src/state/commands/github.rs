@@ -9,9 +9,9 @@ pub async fn fetch_github_reviews(
 ) -> Result<(), String> {
     info!("Ferching with graphql");
     // Extract the needed values and clone the client while holding the lock
-    let (username, github_client) = {
+    let (username, client) = {
         let state_guard = state.data.lock().unwrap();
-        let mut client_guard = state.github_client.lock().unwrap();
+        let mut client_guard = state.client.lock().unwrap();
 
         // Get auth info from state
         let auth = state_guard.auth.as_ref().ok_or("Not authenticated")?;
@@ -33,8 +33,8 @@ pub async fn fetch_github_reviews(
     }; // MutexGuards are dropped here
 
     // Now we can make the async call using the cloned client
-    let reviews = github_client
-        .get_all_relevant_prs_2(&username)
+    let reviews = client
+        .get_all_relevant_prs(&username)
         .await
         .map_err(|e| e.to_string())?;
 
@@ -58,19 +58,22 @@ pub async fn login(
     token: String,
     hostname: Option<String>,
 ) -> Result<AppState, String> {
-    let client =
+    let new_client =
         GitHubClient::create_client(&token, hostname.clone()).map_err(|e| e.to_string())?;
 
-    let user = client.get_user_info().await.map_err(|e| e.to_string())?;
+    let user = new_client
+        .get_user_info()
+        .await
+        .map_err(|e| e.to_string())?;
 
-    let reviews = client
-        .get_all_relevant_prs_2(&user.login)
+    let reviews = new_client
+        .get_all_relevant_prs(&user.login)
         .await
         .map_err(|e| e.to_string())?;
 
     {
-        let mut github_client = state.github_client.lock().unwrap();
-        *github_client = Some(client);
+        let mut client = state.client.lock().unwrap();
+        *client = Some(new_client);
 
         state
             .update(&app_handle, |current_state| {
@@ -95,8 +98,8 @@ pub async fn logout(
 ) -> Result<(), String> {
     // Clear GitHub client
     {
-        let mut github_client = state.github_client.lock().unwrap();
-        *github_client = None;
+        let mut client = state.client.lock().unwrap();
+        *client = None;
     }
 
     // Reset app state to initial values

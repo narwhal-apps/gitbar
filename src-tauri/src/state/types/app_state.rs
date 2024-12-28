@@ -54,5 +54,5 @@ pub struct StateChangePayload {
 
 pub struct ManagedState {
     pub data: Mutex<AppState>,
-    pub github_client: Mutex<Option<GitHubClient>>,
+    pub client: Mutex<Option<GitHubClient>>,
 }

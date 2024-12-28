@@ -46,7 +46,7 @@ pub fn init_store(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     info!("Creating managed state");
     app.manage(ManagedState {
         data: Mutex::new(state),
-        github_client: Mutex::new(None),
+        client: Mutex::new(None),
     });
     info!("State managed successfully");
 

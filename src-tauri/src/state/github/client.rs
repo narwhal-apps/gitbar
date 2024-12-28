@@ -169,7 +169,7 @@ impl GitHubClient {
         Ok(Author::from(current_user))
     }
 
-    pub async fn get_all_relevant_prs_2(
+    pub async fn get_all_relevant_prs(
         &self,
         username: &str,
     ) -> Result<Vec<PullRequest>, Box<dyn std::error::Error>> {
