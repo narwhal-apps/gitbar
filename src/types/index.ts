@@ -5,7 +5,7 @@ export type AppState = {
   settings: SettingsState;
   github: GithubSettings;
   issueCount: number;
-  reviews: Array<Review>;
+  reviews: Array<PullRequest>;
   availableOrgs: Array<Organization>;
   theme: Theme;
 };
@@ -14,32 +14,31 @@ export type AuthState = { token: string | null; hostname: string | null; user: A
 
 export type AuthTokenOptions = { hostname: string; token: string };
 
-export type Author = {
-  login: string;
-  id: UserId;
-  nodeId: string;
-  avatarUrl: string;
-  gravatarId: string;
-  url: string;
-  htmlUrl: string;
-  followersUrl: string;
-  followingUrl: string;
-  gistsUrl: string;
-  starredUrl: string;
-  subscriptionsUrl: string;
-  organizationsUrl: string;
-  reposUrl: string;
-  eventsUrl: string;
-  receivedEventsUrl: string;
-  type: string;
-  siteAdmin: boolean;
-  patchUrl: string | null;
-  email: string | null;
-};
+export type Author = { login: string; avatarUrl: string; url: string };
 
 export type GithubSettings = { archive: boolean; type: string; state: string };
 
+export type Label = { name: string; color: string };
+
+export type Labels = Array<Label>;
+
 export type Organization = { value: string; label: string };
+
+export type PullRequest = {
+  title: string;
+  url: string;
+  number: bigint;
+  repository: string;
+  author: Author;
+  createdAt: string;
+  closed: boolean;
+  isDraft: boolean;
+  reviewDecision: string;
+  totalCommentsCount: bigint;
+  isReadByViewer: boolean;
+  labels: Labels;
+  statusCheckRollup: StatusCheckRollup;
+};
 
 export type Review = {
   repository: string;
@@ -52,6 +51,9 @@ export type Review = {
   isDraft: boolean;
   reviewDecision: string;
   totalCommentsCount: number;
+  labels: Labels;
+  statusCheckRollup: StatusCheckRollup;
+  isReadByViewer: boolean;
 };
 
 export type SettingsState = { openAtStartup: boolean; isCompactMode: boolean; fetchInterval: number };
@@ -59,6 +61,8 @@ export type SettingsState = { openAtStartup: boolean; isCompactMode: boolean; fe
 export type StateChangePayload = { newState: AppState; changedFields: Array<StateField> };
 
 export type StateField = 'auth' | 'settings' | 'github' | 'issueCount' | 'reviews' | 'availableOrgs' | 'theme';
+
+export type StatusCheckRollup = { state: string };
 
 export type Theme = 'dark' | 'light';
 

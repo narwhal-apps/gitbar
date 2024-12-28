@@ -4,12 +4,12 @@
 //! curl -L https://docs.github.com/public/fpt/schema.docs.graphql -o src-tauri/src/state/github/github_schema.graphql
 //! ```
 
-use crate::state::types::{Author, Label, Labels, PullRequest, Review, StatusCheckRollup, UserId};
+use crate::state::types::{Author, Label, Labels, PullRequest, StatusCheckRollup, UserId};
 use graphql_client::GraphQLQuery;
 use log::info;
 use octocrab::models::Author as OctocrabAuthor;
 use octocrab::models::UserId as OctocrabUserId;
-use octocrab::{models, Octocrab};
+use octocrab::Octocrab;
 use std::sync::Arc;
 
 type URI = String;
@@ -118,20 +118,6 @@ impl From<OctocrabUserId> for UserId {
     }
 }
 
-pub async fn get_user_info(token: &str) -> Result<Author, Box<dyn std::error::Error>> {
-    // Create an instance of Octocrab
-    let octocrab = Octocrab::builder()
-        .personal_token(String::from(token))
-        .build()?;
-
-    // Get authenticated user (if using authentication)
-    let current_user = octocrab.current().user().await?;
-
-    info!("Current user: {:?}", current_user);
-
-    Ok(Author::from(current_user))
-}
-
 // Client wrapper struct
 #[derive(Clone)]
 pub struct GitHubClient {
@@ -175,55 +161,6 @@ impl GitHubClient {
     // Method to get the inner client
     pub fn client(&self) -> &Octocrab {
         &self.inner
-    }
-
-    // Implement your API methods here
-    pub async fn get_all_relevant_prs(
-        &self,
-        username: &str,
-    ) -> Result<Vec<Review>, octocrab::Error> {
-        let search_query = format!("type:pr state:open review-requested:{}", username);
-
-        let search_results = self
-            .client()
-            .search()
-            .issues_and_pull_requests(&search_query)
-            .per_page(100)
-            .sort("updated")
-            .order("desc")
-            .send()
-            .await?;
-
-        Ok(search_results
-            .items
-            .into_iter()
-            .map(|issue| Review {
-                repository: issue.repository_url.to_string(),
-                author: Author::from(issue.user),
-                created_at: issue.created_at.to_string(),
-                number: issue.number,
-                url: issue.html_url.to_string(),
-                title: issue.title,
-                closed: issue.state == models::IssueState::Closed,
-                is_draft: false,
-                review_decision: String::from(""),
-                total_comments_count: issue.comments,
-                is_read_by_viewer: false,
-                labels: Labels(
-                    issue
-                        .labels
-                        .into_iter()
-                        .map(|label| Label {
-                            name: label.name,
-                            color: label.color,
-                        })
-                        .collect(),
-                ),
-                status_check_rollup: StatusCheckRollup {
-                    state: String::from(""),
-                },
-            })
-            .collect())
     }
 
     pub async fn get_user_info(&self) -> Result<Author, Box<dyn std::error::Error>> {

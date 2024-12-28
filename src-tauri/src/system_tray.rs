@@ -1,3 +1,4 @@
+use log::info;
 use tauri::{
     image::Image,
     menu::MenuBuilder,
@@ -58,7 +59,7 @@ fn get_icon() -> Image<'static> {
         dark_light::Mode::Default => "light",
     };
 
-    println!("{:?} theme: ", theme);
+    info!("theme: {:?}", theme);
 
     return Image::from_path(format!("icons/tray-{theme}.png")).unwrap();
 }

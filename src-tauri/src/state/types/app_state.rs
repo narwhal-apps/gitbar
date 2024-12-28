@@ -1,6 +1,6 @@
 use super::{
     auth::AuthState,
-    github::{GithubSettings, Organization, Review},
+    github::{GithubSettings, Organization, PullRequest},
     settings::SettingsState,
 };
 use crate::state::github::client::GitHubClient;
@@ -26,7 +26,7 @@ pub struct AppState {
     pub settings: SettingsState,
     pub github: GithubSettings,
     pub issue_count: i32,
-    pub reviews: Vec<Review>,
+    pub reviews: Vec<PullRequest>,
     pub available_orgs: Vec<Organization>,
     pub theme: Theme,
 }
@@ -52,7 +52,6 @@ pub struct StateChangePayload {
     pub changed_fields: Vec<StateField>,
 }
 
-// Wrap AppState in a Mutex
 pub struct ManagedState {
     pub data: Mutex<AppState>,
     pub github_client: Mutex<Option<GitHubClient>>,

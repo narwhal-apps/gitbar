@@ -74,26 +74,6 @@ pub struct PullRequest {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
 #[ts(export, export_to = "index.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct Review {
-    pub repository: String,
-    pub author: Author,
-    pub created_at: String,
-    pub number: u64, // Change from String to i32
-    pub url: String,
-    pub title: String,
-    // pub merged: bool,
-    pub closed: bool,
-    pub is_draft: bool,
-    pub review_decision: String, // Change from enum to String temporarily
-    pub total_comments_count: u32,
-    pub labels: Labels, // Change from Vec<Label> to Labels struct
-    pub status_check_rollup: StatusCheckRollup,
-    pub is_read_by_viewer: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, TS)]
-#[ts(export, export_to = "index.ts")]
-#[serde(rename_all = "camelCase")]
 pub struct Author {
     pub login: String,
     pub avatar_url: String,

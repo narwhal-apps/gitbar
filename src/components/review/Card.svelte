@@ -2,7 +2,7 @@
   import { open } from '@tauri-apps/plugin-shell';
   import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '$lib/components/ui/tooltip';
   import * as Avatar from '$lib/components/ui/avatar';
-  import type { Review } from '../../types/index';
+  import type { PullRequest } from '../../types/index';
   import StatusBadge from './StatusBadge.svelte';
   import RepoIcon from './RepoIcon.svelte';
   import PRIcon from './PRIcon.svelte';
@@ -10,44 +10,44 @@
   import { appState } from '$lib/appState.svelte';
   import { cn } from '$lib/utils';
 
-  let { pr, index }: { pr: Review; index: number } = $props();
+  let { pr, index }: { pr: PullRequest; index: number } = $props();
 
-  // const prState = getPRState(pr);
-  // const status = getStatusType(pr);
-  // const formattedDate = formatDate(new Date(pr.created_at));
+  const prState = getPRState(pr);
+  const status = getStatusType(pr);
+  const formattedDate = formatDate(new Date(pr.createdAt));
 
   // class:opacity-60={pr.closed && !pr.merged}
-  // data-compact={appState.settings.isCompactMode}
 </script>
 
 <div
   role="menuitem"
   tabindex={index + 1}
+  data-compact={appState.settings?.isCompactMode}
   class="group flex flex-col gap-2 border bg-background px-3 py-2 outline-0 -outline-offset-2 transition-all duration-200 hover:bg-foreground/5 data-[compact=true]:gap-0"
 >
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-2 text-sm text-secondary-foreground group-data-[compact=true]:text-xs">
       <RepoIcon />
-      <span>{pr.repository.split('repos/')[1]}</span>
+      <span>{pr.repository}</span>
       <span class="text-github-text-muted">#{pr.number}</span>
     </div>
-    <!-- {#if pr.isReadByViewer}
+    {#if pr.isReadByViewer}
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger>
             <div class="mr-[6px] h-2 w-2 animate-pulse cursor-default rounded-full bg-blue-500"></div>
           </TooltipTrigger>
           <TooltipContent
-            class={cn('border border-blue-500/25', appState.settings.isCompactMode && 'px-1 py-0 text-[12px]')}
+            class={cn('border border-blue-500/25', appState.settings?.isCompactMode && 'px-1 py-0 text-[12px]')}
             >Unread</TooltipContent
           >
         </Tooltip>
       </TooltipProvider>
-    {/if} -->
+    {/if}
   </div>
 
   <div class="flex items-center gap-2">
-    <!-- <PRIcon state={prState} /> -->
+    <PRIcon state={prState} />
     <h3 class="truncate font-semibold">
       <a
         href={pr.url}
@@ -73,10 +73,10 @@
         </Avatar.Root>
         <button
           class="hover:text-slate-600/70 dark:hover:text-white/70"
-          onclick={() => (pr.author.htmlUrl ? open(pr.author.htmlUrl) : null)}>{pr.author.login}</button
+          onclick={() => (pr.author.url ? open(pr.author.url) : null)}>{pr.author.login}</button
         >
       </span>
-      <!-- <span class="text-github-text-muted">{formattedDate}</span> -->
+      <span class="text-github-text-muted">{formattedDate}</span>
       {#if pr.totalCommentsCount > 0}
         <span class="flex items-center gap-1 text-github-text-muted">
           <svg class="h-4 w-4 group-data-[compact=true]:h-3 group-data-[compact=true]:w-3" viewBox="0 0 16 16">
@@ -90,15 +90,15 @@
       {/if}
     </div>
     <div class="flex flex-row items-center gap-2 group-data-[compact=true]:gap-1">
-      <!-- {#if pr.labels.edges.length > 0}
-        {#each pr.labels.edges as label}
+      {#if pr.labels.length > 0}
+        {#each pr.labels as label}
           {#if appState.isDark}
             <span
               class="items-center rounded-full border px-2 text-xs text-black group-data-[compact=true]:p-0 group-data-[compact=true]:text-[10px]"
               style="color: #{label.color}; filter: brightness(160%); border-color: {hexToRGBA(
                 label.color,
-                appState.settings.isCompactMode ? 0 : 0.3
-              )}; background-color: {hexToRGBA(label.color, appState.settings.isCompactMode ? 0 : 0.18)};"
+                appState.settings?.isCompactMode ? 0 : 0.3
+              )}; background-color: {hexToRGBA(label.color, appState.settings?.isCompactMode ? 0 : 0.18)};"
               >{label.name}</span
             >
           {:else}
@@ -108,8 +108,8 @@
             >
           {/if}
         {/each}
-      {/if} -->
-      <!-- <StatusBadge {status} /> -->
+      {/if}
+      <StatusBadge {status} />
     </div>
   </div>
 </div>

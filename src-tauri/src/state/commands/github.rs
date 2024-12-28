@@ -1,4 +1,3 @@
-use crate::state::github::client::get_user_info;
 use crate::state::github::client::GitHubClient;
 use crate::state::types::{AppState, ManagedState};
 use log::info;
@@ -8,55 +7,7 @@ pub async fn fetch_github_reviews(
     app_handle: tauri::AppHandle,
     state: tauri::State<'_, ManagedState>,
 ) -> Result<(), String> {
-    info!("Fetching GitHub reviews");
-    // Extract the needed values and clone the client while holding the lock
-    let (username, github_client) = {
-        let state_guard = state.data.lock().unwrap();
-        let mut client_guard = state.github_client.lock().unwrap();
-
-        // Get auth info from state
-        let auth = state_guard.auth.as_ref().ok_or("Not authenticated")?;
-        let user = auth.user.as_ref().ok_or("No user found")?;
-        let token = auth.token.as_ref().ok_or("No token found")?;
-
-        // If client is not initialized, create a new one
-        if client_guard.is_none() {
-            *client_guard = Some(
-                GitHubClient::create_client(token, auth.hostname.clone())
-                    .map_err(|e| e.to_string())?,
-            );
-        }
-
-        let client = client_guard.as_ref().unwrap();
-
-        // Return the values we need
-        (user.login.clone(), client.clone())
-    }; // MutexGuards are dropped here
-
-    // Now we can make the async call using the cloned client
-    let reviews = github_client
-        .get_all_relevant_prs(&username)
-        .await
-        .map_err(|e| e.to_string())?;
-
-    info!("Fetched {} reviews", reviews.len());
-
-    state
-        .update(&app_handle, |current_state| {
-            current_state.issue_count = reviews.len() as i32;
-            current_state.reviews = reviews;
-        })
-        .map_err(|e| e.to_string());
-
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn fetch_github_reviews_2(
-    app_handle: tauri::AppHandle,
-    state: tauri::State<'_, ManagedState>,
-) -> Result<(), String> {
-    info!("graphql test");
+    info!("Ferching with graphql");
     // Extract the needed values and clone the client while holding the lock
     let (username, github_client) = {
         let state_guard = state.data.lock().unwrap();
@@ -90,38 +41,13 @@ pub async fn fetch_github_reviews_2(
     info!("Fetched {} reviews", reviews.len());
     info!("Fetched {:?} reviews", reviews);
 
-    // state
-    //     .update(&app_handle, |current_state| {
-    //         current_state.issue_count = reviews.len() as i32;
-    //         current_state.reviews = reviews;
-    //     })
-    //     .map_err(|e| e.to_string());
+    state
+        .update(&app_handle, |current_state| {
+            current_state.issue_count = reviews.len() as i32;
+            current_state.reviews = reviews;
+        })
+        .map_err(|e| e.to_string());
 
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn get_user(
-    app_handle: tauri::AppHandle,
-    state: tauri::State<'_, ManagedState>,
-) -> Result<(), String> {
-    // Extract the needed values while holding the lock
-    let token = {
-        let state_guard = state.data.lock().unwrap();
-
-        // Get auth info from state
-        let auth = state_guard.auth.as_ref().ok_or("Not authenticated")?;
-        let token = auth.token.as_ref().ok_or("No token found")?;
-
-        // Clone the values we need
-        token.clone()
-    }; // MutexGuard is dropped here
-
-    // Now we can make the async call safely
-    let user = get_user_info(&token).await.map_err(|e| e.to_string())?;
-
-    // You might want to do something with the user info here
-    // For example, update the state with the user info
     Ok(())
 }
 
@@ -138,7 +64,7 @@ pub async fn login(
     let user = client.get_user_info().await.map_err(|e| e.to_string())?;
 
     let reviews = client
-        .get_all_relevant_prs(&user.login)
+        .get_all_relevant_prs_2(&user.login)
         .await
         .map_err(|e| e.to_string())?;
 
