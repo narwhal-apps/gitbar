@@ -3,17 +3,41 @@
     windows_subsystem = "windows"
 )]
 
+use log::{error, info};
 use tauri::{Manager, Runtime, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
 mod commands;
 mod server;
+mod state;
 mod system_tray;
 mod utils;
 
-use commands::{set_review_count, start_server, stop_server};
+use commands::{start_server, stop_server};
 use server::AuthServer;
 
+use state::{
+    commands::{
+        github::{fetch_github_reviews, login, logout},
+        state::{get_state, update_partial_state, update_state},
+    },
+    init_store,
+};
+
 use std::sync::Mutex;
+
+#[cfg(debug_assertions)]
+fn open_browser(url: &str) -> Result<(), Box<dyn std::error::Error>> {
+    if cfg!(target_os = "windows") {
+        std::process::Command::new("cmd")
+            .args(["/C", &format!("start {}", url)])
+            .spawn()?;
+    } else if cfg!(target_os = "macos") {
+        std::process::Command::new("open").arg(url).spawn()?;
+    } else {
+        std::process::Command::new("xdg-open").arg(url).spawn()?;
+    }
+    Ok(())
+}
 
 #[cfg(target_os = "macos")]
 use cocoa::appkit::{NSWindow, NSWindowButton, NSWindowStyleMask, NSWindowTitleVisibility};
@@ -72,6 +96,7 @@ impl<R: Runtime> WindowExt for WebviewWindow<R> {
 pub fn main() {
     #[cfg(debug_assertions)]
     let builder = tauri::Builder::default().plugin(tauri_plugin_devtools::init());
+
     #[cfg(not(debug_assertions))]
     let builder = tauri::Builder::default();
 
@@ -80,8 +105,14 @@ pub fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
         .manage(Mutex::new(AuthServer::new()))
         .setup(move |app| {
+            init_store(app).map_err(|e| {
+                error!("Failed to initialize store: {:?}", e);
+                e
+            })?;
+
             #[cfg(desktop)]
             {
                 use tauri_plugin_autostart::MacosLauncher;
@@ -99,7 +130,7 @@ pub fn main() {
                 } else {
                     let _ = autostart_manager.disable();
                 }
-                println!(
+                info!(
                     "Autostart enabled: {}",
                     autostart_manager.is_enabled().unwrap()
                 );
@@ -140,16 +171,32 @@ pub fn main() {
             window.set_always_on_top(true).unwrap();
 
             #[cfg(debug_assertions)]
-            window.open_devtools();
+            {
+                // Display devtools by default
+                window.open_devtools();
+                // Open crabnebula devtools URL in default browser
+                tauri::async_runtime::spawn(async move {
+                    if let Err(e) =
+                        open_browser("https://devtools.crabnebula.dev/dash/127.0.0.1/3000")
+                    {
+                        error!("Failed to open devtools in browser: {}", e);
+                    }
+                });
+            }
 
             let _ = system_tray::setup(app);
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            set_review_count,
+            update_state,
+            get_state,
+            update_partial_state,
+            fetch_github_reviews,
+            login,
+            logout,
             start_server,
-            stop_server
+            stop_server,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application");

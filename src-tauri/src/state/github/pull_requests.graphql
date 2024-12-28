@@ -1,0 +1,49 @@
+query PullRequests($query: String!, $perPage: Int!) {
+  search(query: $query, type: ISSUE, first: $perPage) {
+    nodes {
+      __typename
+      ... on PullRequest {
+        number
+        title
+        url
+        repository {
+          nameWithOwner
+          url
+        }
+        author {
+          __typename
+          login
+          avatarUrl
+          url
+        }
+        createdAt
+        isDraft
+        reviewDecision
+        comments {
+          totalCount
+        }
+        labels(first: 100) {
+          nodes {
+            name
+            color
+          }
+        }
+        commits(last: 1) {
+          nodes {
+            commit {
+              statusCheckRollup {
+                state
+              }
+            }
+          }
+        }
+        viewerSubscription
+        closed
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

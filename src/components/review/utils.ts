@@ -1,3 +1,4 @@
+import type { PullRequest } from '../../types/index';
 import type { GitHubPR, PullRequestState } from './types';
 
 export const hexToRGBA = (hexCode: string, opacity = 1) => {
@@ -27,16 +28,15 @@ export const getContrastYIQ = (hexcolor: string) => {
   return yiq >= 128 ? 'black' : 'white';
 };
 
-export function getPRState(pr: GitHubPR): PullRequestState {
-  const { merged, closed, isDraft } = pr.node;
-  if (merged) return 'merged';
+export function getPRState(pr: PullRequest): PullRequestState {
+  const { closed, isDraft } = pr;
   if (closed) return 'closed';
   if (isDraft) return 'draft';
   return 'open';
 }
 
-export function getStatusType(pr: GitHubPR): 'success' | 'pending' | 'failure' {
-  const state = pr.node.statusCheckRollup?.state;
+export function getStatusType(pr: PullRequest): 'success' | 'pending' | 'failure' {
+  const state = pr.statusCheckRollup?.state;
   switch (state) {
     case 'SUCCESS':
       return 'success';
